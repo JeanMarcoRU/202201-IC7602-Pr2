@@ -1,67 +1,60 @@
-#include<stdio.h>	//printf
-#include<string.h> //memset
-#include<stdlib.h> //exit(0);
-#include<arpa/inet.h>
-#include<sys/socket.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include <stdlib.h>
 
-#define BUFLEN 512	//Max length of buffer
-#define PORT 8888	//The port on which to listen for incoming data
+#define PORT 5000
 
-void die(char *s)
+int main()
 {
-	perror(s);
-	exit(1);
-}
+    int sock;
+    int addr_len, bytes_read;
+    char recv_data[1024];
+    struct sockaddr_in server_addr, client_addr;
 
-int main(void)
-{
-	struct sockaddr_in si_me, si_other;
-	
-	int s, i, slen = sizeof(si_other) , recv_len;
-	char buf[BUFLEN];
-	
-	//create a UDP socket
-	if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
-	{
-		die("socket");
-	}
-	
-	// zero out the structure
-	memset((char *) &si_me, 0, sizeof(si_me));
-	
-	si_me.sin_family = AF_INET;
-	si_me.sin_port = htons(PORT);
-	si_me.sin_addr.s_addr = htonl(INADDR_ANY);
-	
-	//bind socket to port
-	if( bind(s , (struct sockaddr*)&si_me, sizeof(si_me) ) == -1)
-	{
-		die("bind");
-	}
-	
-	//keep listening for data
-	while(1)
-	{
-		printf("Waiting for data...");
-		fflush(stdout);
-		
-		//try to receive some data, this is a blocking call
-		if ((recv_len = recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen)) == -1)
-		{
-			die("recvfrom()");
-		}
-		
-		//print details of the client/peer and the data received
-		printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
-		printf("Data: %s\n" , buf);
-		
-		//now reply the client with the same data
-		if (sendto(s, buf, recv_len, 0, (struct sockaddr*) &si_other, slen) == -1)
-		{
-			die("sendto()");
-		}
-	}
+    if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+    {
+        perror("Socket");
+        exit(1);
+    }
 
-	close(s);
-	return 0;
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(PORT);
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    bzero(&(server_addr.sin_zero), 8);
+
+    if (bind(sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) == -1)
+    {
+        perror("Bind");
+        exit(1);
+    }
+
+    addr_len = sizeof(struct sockaddr);
+
+    printf("UDPServer Waiting for client on port 5000\n");
+    fflush(stdout);
+
+    while (1)
+    {
+
+        bytes_read = recvfrom(sock, recv_data, 1024, 0, (struct sockaddr *)&client_addr, &addr_len);
+
+        recv_data[bytes_read] = '\0';
+
+        printf("\n(%s , %d) said : ", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
+        printf("%s", recv_data);
+
+        if (sendto(sock, recv_data, bytes_read, 0, (struct sockaddr *)&client_addr, addr_len) == -1)
+        {
+            printf("Error: sendto()");
+        }
+
+        fflush(stdout);
+    }
+    return 0;
 }
