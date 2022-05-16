@@ -9,12 +9,13 @@
 #include <stdlib.h>
 
 #define PORT 5000
+#define MAXSIZE 2048
 
 int main()
 {
     int sock;
     int addr_len, bytes_read;
-    char recv_data[1024];
+    char buffer[MAXSIZE];
     struct sockaddr_in server_addr, client_addr;
 
     if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
@@ -41,15 +42,19 @@ int main()
 
     while (1)
     {
+        // recibe el mensaje
+        bytes_read = recvfrom(sock, buffer, 1024, 0, (struct sockaddr *)&client_addr, &addr_len);
 
-        bytes_read = recvfrom(sock, recv_data, 1024, 0, (struct sockaddr *)&client_addr, &addr_len);
-
-        recv_data[bytes_read] = '\0';
+        buffer[bytes_read] = '\0';
 
         printf("\n(%s , %d) said : ", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
-        printf("%s", recv_data);
+        printf("%s", buffer);
 
-        if (sendto(sock, recv_data, bytes_read, 0, (struct sockaddr *)&client_addr, addr_len) == -1)
+        char *end_msj = malloc(MAXSIZE);
+        sprintf(end_msj, "Server: %s\n", buffer);
+
+        // envia el mensaje
+        if (sendto(sock, end_msj, strlen(end_msj), 0, (struct sockaddr *)&client_addr, addr_len) == -1)
         {
             printf("Error: sendto()");
         }
