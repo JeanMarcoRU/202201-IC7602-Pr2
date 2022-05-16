@@ -3,11 +3,11 @@
 # Instrucciones de ejecución
 
 ```
-gcc -o server UDP_server.c -lm
+gcc -o cserver UDP_server.c -lm
 ```
 
 ```
-./udpserver
+./cserver
 ```
 
 ## En otra termial:
