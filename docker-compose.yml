@@ -19,3 +19,14 @@ services:
     image: mongo
     volumes:
       - "./db:/data/db"
+  
+  cserver:
+    build: ./cserver
+    volumes:
+      - ./UDP_server.c:/root/app/server.c
+    command: bash -c "cd /root/app/ && gcc server.c -o server && ./server"
+
+  client:
+    build: ./cliente
+    container_name: cliente
+    command: bash -c "tail -F nada"
