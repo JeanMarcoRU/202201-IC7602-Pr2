@@ -1,1 +1,7 @@
-# 202201-IC7602-Pr2
+#### Jean Marco Rojas - 2015040717
+
+# Instrucciones de ejecución
+
+```
+gcc UDP_server.c –o udpserver
+```
