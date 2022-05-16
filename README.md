@@ -26,6 +26,8 @@ nc -vu localhost 5000
 
 ## Para el Api REST
 
+Del tutorial: https://www.youtube.com/watch?v=wWXILAcvx00&ab_channel=MarluanEspiritusanto
+
 ```
 curl -H "Content-Type: application/json" -X POST http://localhost:5000/api/todo -d '{"todo": "Learn Mongo"}'
 ```
