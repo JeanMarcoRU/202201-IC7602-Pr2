@@ -2,6 +2,8 @@
 
 # Instrucciones de ejecución
 
+## Para el UDP Server
+
 ```
 gcc -o cserver UDP_server.c -lm
 ```
@@ -10,7 +12,7 @@ gcc -o cserver UDP_server.c -lm
 ./cserver
 ```
 
-## En otra termial:
+### En otra termial:
 
 ```
 sudo apt-get install ncat
