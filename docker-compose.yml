@@ -13,20 +13,35 @@ services:
       - .:/api
     ports: ["5000:5000"]
     tty: true
+    networks:
+      - hogar
 
   mongo:
     container_name: mongo-db
     image: mongo
     volumes:
       - "./db:/data/db"
+    networks:
+      - hogar
   
   cserver:
     build: ./cserver
     volumes:
       - ./UDP_server.c:/root/app/server.c
     command: bash -c "cd /root/app/ && gcc server.c -o server && ./server"
+    networks:
+      hogar:
+        ipv4_address: 1.0.0.5
 
   client:
     build: ./cliente
     container_name: cliente
     command: bash -c "tail -F nada"
+    networks:
+      - hogar
+
+networks:
+  hogar:
+    ipam:
+      config:
+        - subnet: 1.0.0.0/29
