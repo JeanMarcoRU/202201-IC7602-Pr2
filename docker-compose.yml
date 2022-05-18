@@ -26,6 +26,7 @@ services:
   
   cserver:
     build: ./cserver
+    container_name: cserver
     volumes:
       - ./UDP_server.c:/root/app/server.c
     command: bash -c "cd /root/app/ && gcc server.c -o server && ./server"
@@ -37,6 +38,8 @@ services:
     build: ./cliente
     container_name: cliente
     command: bash -c "tail -F nada"
+    volumes:
+      - ./cliente/resolv.conf:/etc/resolv.conf
     networks:
       - hogar
 

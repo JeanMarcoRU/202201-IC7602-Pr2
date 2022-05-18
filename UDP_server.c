@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define PORT 5000
+#define PORT 53
 #define MAXSIZE 2048
 
 int main()
@@ -37,7 +37,7 @@ int main()
 
     addr_len = sizeof(struct sockaddr);
 
-    printf("UDPServer Waiting for client on port 5000\n");
+    printf("UDPServer Waiting for client on port 53\n");
     fflush(stdout);
 
     while (1)

@@ -1,29 +1,18 @@
 #### Jean Marco Rojas - 2015040717
 
 # Instrucciones de ejecución
-
-## Para el UDP Server
-
+Copie y pegue en una terminal levantada en la raíz del proyecto los siguientes comandos:
 ```
-gcc -o cserver UDP_server.c -lm
+docker-compose up -d
+docker exec -it cliente bash
 ```
-
+Después de esto se le abrirá una consola con dnsutils instalado, por lo que podrá ejecutar el comando
 ```
-./cserver
+nslookup www.facebook.com
 ```
-
-### En otra termial:
-
+Una vez hecho esto puede ver en los logs del server udp lo que recibe el señor servidor udp en caracteres por medio del siguiente comando:
 ```
-sudo apt-get install ncat
-```
-
-```
-ncat localhost 5000 -u
-```
-
-```
-nc -vu localhost 5000
+docker logs cserver
 ```
 
 ## Para el Api REST
