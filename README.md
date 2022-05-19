@@ -29,6 +29,7 @@ nc -vu localhost 5000
 ## Para el Api REST
 
 ```
+pip install virtualenv
 pip install -r requirements.txt
 ```
 
