@@ -37,6 +37,7 @@ deactivate
 pip install -r requirements.txt
 ```
 
+Levantar el contenedor en docker:
 
 ```
 sudo docker-compose build
