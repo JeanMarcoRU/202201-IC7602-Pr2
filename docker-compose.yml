@@ -1,21 +1,10 @@
-version: "3.7"
+version: '3.7' #sudo docker-compose up -d     #sudo docker-compose build
 
 services:
-  api:
-    container_name: python-todos-api
-    image: python
-    environment:
-      - MONGO_URI=mongodb://mongo:27017/todos
-      - APP_PORT=5000
-    depends_on:
-      - mongo
-    volumes:
-      - .:/api
-    ports: ["5000:5000"]
-    tty: true
 
-  mongo:
-    container_name: mongo-db
-    image: mongo
-    volumes:
-      - "./db:/data/db"
+  restapi:
+    build: 
+      context: ./ #carpeta con el dockerfile
+      dockerfile: Dockerfile # Archivo de imagen 
+    ports: 
+    - "3000:3000"  
