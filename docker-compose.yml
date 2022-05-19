@@ -1,0 +1,10 @@
+version: '3.7' #sudo docker-compose up -d     #sudo docker-compose build
+
+services:
+
+  restapi:
+    build: 
+      context: ./ #carpeta con el dockerfile
+      dockerfile: Dockerfile # Archivo de imagen 
+    ports: 
+    - "3000:3000"  

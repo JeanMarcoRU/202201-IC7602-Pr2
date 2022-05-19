@@ -29,7 +29,9 @@ nc -vu localhost 5000
 ## Para el Api REST
 
 ```
-pip install virtualenv
+sudo pip3 install virtualenv
+source venv/bin/activate
+deactivate
 pip install -r requirements.txt
 ```
 
