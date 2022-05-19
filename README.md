@@ -28,6 +28,10 @@ nc -vu localhost 5000
 
 ## Para el Api REST
 
+```
+pip install -r requirements.txt
+```
+
 Del tutorial: https://www.youtube.com/watch?v=wWXILAcvx00&ab_channel=MarluanEspiritusanto
 
 ```
