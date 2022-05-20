@@ -57,3 +57,8 @@ Para pasar de base64 a texto:
 ```
 http://127.0.0.1:3000/decode?msj=amVhbiBtYXJjbyByb2phcw==
 ```
+
+Podemos usar curl
+```
+curl http://127.0.0.1:3000/decode?msj=SG9sYU11bmRv
+```
