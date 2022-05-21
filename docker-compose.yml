@@ -1,29 +1,6 @@
 version: "3.7"
 
 services:
-  api:
-    container_name: python-todos-api
-    image: python
-    environment:
-      - MONGO_URI=mongodb://mongo:27017/todos
-      - APP_PORT=5000
-    depends_on:
-      - mongo
-    volumes:
-      - .:/api
-    ports: ["5000:5000"]
-    tty: true
-    networks:
-      - hogar
-
-  mongo:
-    container_name: mongo-db
-    image: mongo
-    volumes:
-      - "./db:/data/db"
-    networks:
-      - hogar
-  
   cserver:
     build: ./cserver
     container_name: cserver
@@ -37,7 +14,9 @@ services:
   client:
     build: ./cliente
     container_name: cliente
-    command: bash -c "tail -F nada"
+    command: bash -c "nslookup www.facebook.com"
+    depends_on:
+      - cserver
     volumes:
       - ./cliente/resolv.conf:/etc/resolv.conf
     networks:

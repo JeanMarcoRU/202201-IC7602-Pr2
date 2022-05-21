@@ -7,10 +7,18 @@
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
-
+#define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
+#define BYTE_TO_BINARY(byte)  \
+  (byte & 0x80 ? '1' : '0'), \
+  (byte & 0x40 ? '1' : '0'), \
+  (byte & 0x20 ? '1' : '0'), \
+  (byte & 0x10 ? '1' : '0'), \
+  (byte & 0x08 ? '1' : '0'), \
+  (byte & 0x04 ? '1' : '0'), \
+  (byte & 0x02 ? '1' : '0'), \
+  (byte & 0x01 ? '1' : '0') 
 #define PORT 53
 #define MAXSIZE 2048
-
 int main()
 {
     int sock;
@@ -44,11 +52,15 @@ int main()
     {
         // recibe el mensaje
         bytes_read = recvfrom(sock, buffer, 1024, 0, (struct sockaddr *)&client_addr, &addr_len);
-
+        printf("+----------------+\n\nSe recibió un paquete DNS:\n");
         buffer[bytes_read] = '\0';
-
-        printf("\n(%s , %d) said : ", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
-        printf("%s", buffer);
+        for (int i = 0; i < bytes_read; i+=2)
+        {    
+            char l[9], h[9];
+            sprintf(l, BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(buffer[i]));
+            sprintf(h, BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(buffer[i+1]));
+            printf("+----------------+\n|%s%s|\n", l, h);
+        }
 
         char *end_msj = malloc(MAXSIZE);
         sprintf(end_msj, "Server: %s\n", buffer);
