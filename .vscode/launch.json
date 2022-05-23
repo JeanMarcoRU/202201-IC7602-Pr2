@@ -14,13 +14,11 @@
       "request": "launch",
       "args": [],
       "stopAtEntry": false,
+      "externalConsole": false,
       "cwd": "/home/jean/Documentos/GitHub/202201-IC7602-Pr2",
-      "environment": [],
       "program": "/home/jean/Documentos/GitHub/202201-IC7602-Pr2/build/Debug/outDebug",
-      "internalConsoleOptions": "openOnSessionStart",
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/gdb",
-      "console": "integratedTerminal",
       "setupCommands": [
         {
           "description": "Enable pretty-printing for gdb",

@@ -1,4 +1,4 @@
-version: "3.7"
+version: '3.7' #sudo docker-compose up -d     #sudo docker-compose build
 
 services:
   cserver:
@@ -22,8 +22,16 @@ services:
     networks:
       - hogar
 
+  restapi:
+    build: 
+      context: ./ #carpeta con el dockerfile
+      dockerfile: Dockerfile # Archivo de imagen 
+    ports: 
+    - "443:443"  
+    
 networks:
   hogar:
     ipam:
       config:
         - subnet: 1.0.0.0/29
+
