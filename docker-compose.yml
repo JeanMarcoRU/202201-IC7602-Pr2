@@ -5,7 +5,7 @@ services:
     build: ./cserver
     container_name: cserver
     volumes:
-      - ./UDP_server.c:/root/app/server.c
+      - ./cserver/UDP_server.c:/root/app/server.c
     command: bash -c "cd /root/app/ && gcc server.c -o server && ./server"
     networks:
       hogar:
@@ -14,7 +14,7 @@ services:
   client:
     build: ./cliente
     container_name: cliente
-    command: bash -c "nslookup www.facebook.com"
+    command: bash -c "nslookup https://w3.cs.jmu.edu/kirkpams/OpenCSF/Books/csf/html/UDPSockets.html"
     depends_on:
       - cserver
     volumes:
@@ -28,7 +28,7 @@ services:
       dockerfile: Dockerfile # Archivo de imagen 
     ports: 
     - "443:443"  
-    
+
 networks:
   hogar:
     ipam:

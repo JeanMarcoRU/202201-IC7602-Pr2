@@ -59,7 +59,8 @@ int main()
             char l[9], h[9];
             sprintf(l, BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(buffer[i]));
             sprintf(h, BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(buffer[i+1]));
-            printf("+----------------+\n|%s%s|\n", l, h);
+            printf("+----------------+\n|%c%c|\n", buffer[i], buffer[i+1]);
+            //printf("+----------------+\n|%s%s|\n", l, h);
         }
 
         char *end_msj = malloc(MAXSIZE);
