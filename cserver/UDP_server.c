@@ -51,9 +51,10 @@ int main()
 
     while (1)
     {
-        f1 = fopen("log.txt", "wb");
+        
         // recibe el mensaje
         bytes_read = recvfrom(sock, buffer, 1024, 0, (struct sockaddr *)&client_addr, &addr_len);
+        f1 = fopen("log.txt", "wb");
         fwrite(buffer, 1, bytes_read, f1);
         printf("se leyo %d\n", bytes_read);
         //printf("+----------------+\n\nSe recibió un paquete DNS:\n");
@@ -78,10 +79,10 @@ int main()
 
         fflush(stdout);
         fclose(f1);
-        if (bytes_read > 0)
+        /*if (bytes_read > 0)
         {
             break;
-        }
+        }*/
     }
     return 0;
 }
