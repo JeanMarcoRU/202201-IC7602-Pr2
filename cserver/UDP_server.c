@@ -8,15 +8,15 @@
 #include <string.h>
 #include <stdlib.h>
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
-#define BYTE_TO_BINARY(byte)  \
-  (byte & 0x80 ? '1' : '0'), \
-  (byte & 0x40 ? '1' : '0'), \
-  (byte & 0x20 ? '1' : '0'), \
-  (byte & 0x10 ? '1' : '0'), \
-  (byte & 0x08 ? '1' : '0'), \
-  (byte & 0x04 ? '1' : '0'), \
-  (byte & 0x02 ? '1' : '0'), \
-  (byte & 0x01 ? '1' : '0') 
+#define BYTE_TO_BINARY(byte)       \
+    (byte & 0x80 ? '1' : '0'),     \
+        (byte & 0x40 ? '1' : '0'), \
+        (byte & 0x20 ? '1' : '0'), \
+        (byte & 0x10 ? '1' : '0'), \
+        (byte & 0x08 ? '1' : '0'), \
+        (byte & 0x04 ? '1' : '0'), \
+        (byte & 0x02 ? '1' : '0'), \
+        (byte & 0x01 ? '1' : '0')
 #define PORT 53
 #define MAXSIZE 2048
 int main()
@@ -48,16 +48,18 @@ int main()
     printf("UDPServer Waiting for client on port 53\n");
     fflush(stdout);
     FILE *f1;
-    f1 = fopen ("log.txt", "wb");
+
     while (1)
     {
+        f1 = fopen("log.txt", "wb");
         // recibe el mensaje
         bytes_read = recvfrom(sock, buffer, 1024, 0, (struct sockaddr *)&client_addr, &addr_len);
-        fwrite (buffer, 1, bytes_read, f1);
+        fwrite(buffer, 1, bytes_read, f1);
+        printf("se leyo %d\n", bytes_read);
         printf("+----------------+\n\nSe recibió un paquete DNS:\n");
         buffer[bytes_read] = '\0';
         /*for (int i = 0; i < bytes_read; i+=2)
-        {    
+        {
             char l[9], h[9];
             sprintf(l, BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(buffer[i]));
             sprintf(h, BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(buffer[i+1]));
@@ -76,6 +78,10 @@ int main()
 
         fflush(stdout);
         fclose(f1);
+        if (bytes_read > 0)
+        {
+            break;
+        }
     }
     return 0;
 }
