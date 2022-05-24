@@ -23,7 +23,7 @@ int main()
 {
     int sock;
     int addr_len, bytes_read;
-    char buffer[MAXSIZE];
+    unsigned char buffer[MAXSIZE];
     struct sockaddr_in server_addr, client_addr;
 
     if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
