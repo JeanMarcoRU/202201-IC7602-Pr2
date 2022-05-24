@@ -1,6 +1,6 @@
 from flask import Flask, request
 import base64
-#from users import users
+import socket
 
 app = Flask(__name__)
 
@@ -20,9 +20,10 @@ def decodemsj():
     else:
         base64_bytes = base64_message.encode('ascii')
         message_bytes = base64.b64decode(base64_bytes)
-        message = message_bytes.decode('ascii')  
+        message = message_bytes.decode('ascii')
         return message
-    
+
+
 @app.route("/encode/api/dns_resolver", methods=['POST'])
 def encodemsj():
     message = request.args.get("msj")
@@ -33,6 +34,30 @@ def encodemsj():
         base64_bytes = base64.b64encode(message_bytes)
         base64_message = base64_bytes.decode('ascii')
         return base64_message
+
+
+@app.route("/api/dns_resolver", methods=['POST'])
+def decodemsj():
+    
+    # Recibe los bytes en base64
+    data = request.args.get("data") #http://127.0.0.1:443/api/dns_resolver?data=UHl0aG9uIG==
+    print(base64.b64decode(data))
+    
+    dns = "8.8.8.8"
+    port = 53
+    serverAddressPort = (dns, port)
+    bufferSize = 2024
+    
+    # Create a UDP socket at client side
+    UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+    
+    # Send to server using created UDP socket
+    UDPClientSocket.sendto(data, serverAddressPort)
+    
+    msgFromServer = UDPClientSocket.recvfrom(bufferSize)
+    
+    #Falta que lo devuelva en base64
+    return base64.b64encode(msgFromServer) 
 
 
 # Start the Server
