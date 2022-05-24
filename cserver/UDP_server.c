@@ -51,14 +51,18 @@ int main()
 
     while (1)
     {
-        
+
         // recibe el mensaje
         bytes_read = recvfrom(sock, buffer, 1024, 0, (struct sockaddr *)&client_addr, &addr_len);
         f1 = fopen("log.txt", "wb");
         fwrite(buffer, 1, bytes_read, f1);
         printf("se leyo %d\n", bytes_read);
-        //printf("+----------------+\n\nSe recibió un paquete DNS:\n");
-        buffer[bytes_read] = '\0';
+        if (buffer[2] & 0x01 && (buffer[2] & 0x1e) == 0)
+        {
+            printf("encontre lo que busco\n");
+        }
+
+        // buffer[bytes_read] = '\0';
         /*for (int i = 0; i < bytes_read; i+=2)
         {
             char l[9], h[9];
