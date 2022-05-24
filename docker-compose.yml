@@ -7,20 +7,22 @@ services:
     volumes:
       - ./cserver/UDP_server.c:/root/app/server.c
     command: bash -c "cd /root/app/ && gcc server.c -o server && ./server"
-    networks:
-      hogar:
-        ipv4_address: 1.0.0.5
-
-  client:
-    build: ./cliente
-    container_name: cliente
-    command: bash -c "nslookup https://w3.cs.jmu.edu/kirkpams/OpenCSF/Books/csf/html/UDPSockets.html"
-    depends_on:
-      - cserver
-    volumes:
-      - ./cliente/resolv.conf:/etc/resolv.conf
+    ports:
+      - "53:53/udp"
     networks:
       - hogar
+
+  #client:
+  #build: ./cliente
+  #container_name: cliente
+  #command: bash -c "nslookup https://w3.cs.jmu.edu/kirkpams/OpenCSF/Books/csf/html/UDPSockets.html"
+  #command: bash -c "nslookup www.google.com"
+  #depends_on:
+  #  - cserver
+  #volumes:
+  #  - ./cliente/resolv.conf:/etc/resolv.conf
+  #networks:
+  #  - hogar
 
   restapi:
     build: 
