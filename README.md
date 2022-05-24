@@ -14,6 +14,14 @@ Una vez hecho esto puede ver en los logs del server udp lo que recibe el señor 
 ```
 docker logs cserver
 ```
+Para observar los bytes del paquete enviado se ejecuta
+```
+hexyl log.txt
+```
+Para comprobar dicho archivo en binario, se ejecuta
+```
+xxd -b log.txt
+```
 
 ## Para el Api REST
 
