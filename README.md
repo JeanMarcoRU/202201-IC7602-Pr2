@@ -1,4 +1,6 @@
 #### Jean Marco Rojas - 2015040717
+#### Esteban Cruz - 2018104794
+#### María Madrigal - 2018186563
 
 # Instrucciones de ejecución
 Copie y pegue en una terminal levantada en la raíz del proyecto los siguientes comandos:
