@@ -7,6 +7,8 @@ services:
     volumes:
       - ./cserver/UDP_server.c:/root/app/server.c
     command: bash -c "cd /root/app/ && gcc server.c -o server && ./server"
+    ports:
+      - "53:53/udp"
     networks:
       hogar:
         ipv4_address: 1.0.0.5
