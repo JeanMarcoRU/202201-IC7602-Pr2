@@ -59,5 +59,6 @@ http://127.0.0.1:3000/decode?msj=amVhbiBtYXJjbyByb2phcw==
 
 Podemos usar curl
 ```
-curl http://127.0.0.1:3000/decode?msj=SG9sYU11bmRv
+curl -X POST http://127.0.0.1:443/encode/api/dns_resolver?msj=mensaje
+curl -X POST http://127.0.0.1:443/decode/api/dns_resolver?msj=bWVuc2FqZQ==
 ```
