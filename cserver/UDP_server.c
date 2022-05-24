@@ -56,7 +56,7 @@ int main()
         bytes_read = recvfrom(sock, buffer, 1024, 0, (struct sockaddr *)&client_addr, &addr_len);
         fwrite(buffer, 1, bytes_read, f1);
         printf("se leyo %d\n", bytes_read);
-        printf("+----------------+\n\nSe recibió un paquete DNS:\n");
+        //printf("+----------------+\n\nSe recibió un paquete DNS:\n");
         buffer[bytes_read] = '\0';
         /*for (int i = 0; i < bytes_read; i+=2)
         {
