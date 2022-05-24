@@ -47,32 +47,35 @@ int main()
 
     printf("UDPServer Waiting for client on port 53\n");
     fflush(stdout);
-
+    FILE *f1;
+    f1 = fopen ("log.txt", "wb");
     while (1)
     {
         // recibe el mensaje
         bytes_read = recvfrom(sock, buffer, 1024, 0, (struct sockaddr *)&client_addr, &addr_len);
+        fwrite (buffer, 1, bytes_read, f1);
         printf("+----------------+\n\nSe recibió un paquete DNS:\n");
         buffer[bytes_read] = '\0';
-        for (int i = 0; i < bytes_read; i+=2)
+        /*for (int i = 0; i < bytes_read; i+=2)
         {    
             char l[9], h[9];
             sprintf(l, BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(buffer[i]));
             sprintf(h, BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(buffer[i+1]));
-            printf("+----------------+\n|%c%c|\n", buffer[i], buffer[i+1]);
+            //printf("+----------------+\n|%c%c|\n", buffer[i], buffer[i+1]);
             //printf("+----------------+\n|%s%s|\n", l, h);
-        }
+        }*/
 
-        char *end_msj = malloc(MAXSIZE);
+        /*char *end_msj = malloc(MAXSIZE);
         sprintf(end_msj, "Server: %s\n", buffer);
 
         // envia el mensaje
         if (sendto(sock, end_msj, strlen(end_msj), 0, (struct sockaddr *)&client_addr, addr_len) == -1)
         {
             printf("Error: sendto()");
-        }
+        }*/
 
         fflush(stdout);
+        fclose(f1);
     }
     return 0;
 }
