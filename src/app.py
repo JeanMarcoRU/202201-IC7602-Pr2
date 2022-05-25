@@ -40,7 +40,7 @@ def encodemsj():
 def dns_resolver():
     
     # Recibe los bytes en base64
-    data = request.args.get("data") #http://127.0.0.1:443/api/dns_resolver?data=UHl0aG9uIG==
+    data = request.args.get("data") #http://127.0.0.1:443/api/dns_resolver?data=aG9sYSBtdW5kbyBYRA==
     #rint(base64.b64decode(data))
     
     with open("log.txt", "wb") as f:
@@ -57,9 +57,10 @@ def dns_resolver():
     # Send to server using created UDP socket
     UDPClientSocket.sendto(base64.b64decode(data), serverAddressPort)
     
+    #tener cuidado por que lo se podria estar manejando como texto
     msgFromServer = UDPClientSocket.recvfrom(bufferSize)
     
-    #Falta que lo devuelva en base64
+    #Lo devulve en base 64
     return base64.b64encode(msgFromServer) 
 
 
