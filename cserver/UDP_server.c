@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
+#include <curl/curl.h>
 
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
 #define BYTE_TO_BINARY(byte)       \
@@ -250,16 +251,48 @@ int main()
         }
 
         /*
-        convierte a base64 el buffer 
+        convierte a base64 el buffer (binario)
         el encode en base64 se guarda en 'enc'
         Funte del codigo: https://nachtimwald.com/2017/11/18/base64-encode-and-decode-in-c/
         */
-        char *enc;        
+        char *enc;
         size_t out_len;
 
         enc = b64_encode(buffer, bytes_read);
         printf("encoded: '%s'\n", enc);
 
+        char *datapost = malloc(MAXSIZE);
+        sprintf(datapost, "data=%s", enc);
+
+        CURL *curl;
+        CURLcode res;
+
+        /* In windows, this will init the winsock stuff */
+        curl_global_init(CURL_GLOBAL_ALL);
+
+        /* get a curl handle */
+        curl = curl_easy_init();
+        if (curl)
+        {
+            /* First set the URL that is about to receive our POST. This URL can
+               just as well be a https:// URL if that is what should receive the
+               data. */
+            curl_easy_setopt(curl, CURLOPT_URL, "http://127.0.0.1:443/api/dns_resolver");
+            /* Now specify the POST data */
+
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, datapost);
+
+            /* Perform the request, res will get the return code */
+            res = curl_easy_perform(curl);
+            /* Check for errors */
+            if (res != CURLE_OK)
+                fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                        curl_easy_strerror(res));
+
+            /* always cleanup */
+            curl_easy_cleanup(curl);
+        }
+        curl_global_cleanup();
 
         /*
         Convierte de base64 a binario
@@ -268,7 +301,7 @@ int main()
         /* +1 for the NULL terminator. */
         out_len = b64_decoded_size(enc);
         unsigned char out[out_len];
-        //out = malloc(out_len);
+        // out = malloc(out_len);
 
         if (!b64_decode(enc, out, out_len))
         {
@@ -302,10 +335,6 @@ int main()
         fflush(stdout);
         fclose(f1);
         fclose(f2);
-        /*if (bytes_read > 0)
-        {
-            break;
-        }*/
     }
     return 0;
 }

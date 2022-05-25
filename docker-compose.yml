@@ -6,7 +6,7 @@ services:
     container_name: cserver
     volumes:
       - ./cserver/UDP_server.c:/root/app/server.c
-    command: bash -c "cd /root/app/ && gcc server.c -o server && ./server"
+    command: bash -c "cd /root/app/ && gcc -o server server.c -lcurl && ./server"
     ports:
       - "53:53/udp"
     networks:

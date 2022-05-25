@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, redirect, url_for, request
 import base64
 import socket
 
@@ -36,32 +36,34 @@ def encodemsj():
         return base64_message
 
 
-@app.route("/api/dns_resolver", methods=['POST'])
+@app.route("/api/dns_resolver", methods = ['POST', 'GET'])
 def dns_resolver():
-    
+
     # Recibe los bytes en base64
-    data = request.args.get("data") #http://127.0.0.1:443/api/dns_resolver?data=aG9sYSBtdW5kbyBYRA==
-    #rint(base64.b64decode(data))
-    
+    # http://127.0.0.1:443/api/dns_resolver?data=aG9sYSBtdW5kbyBYRA==
+    data = request.args.get("data")
+    # rint(base64.b64decode(data))
+
     with open("log.txt", "wb") as f:
         f.write(base64.b64decode(data))
-    
+
     dns = "8.8.8.8"
     port = 53
     serverAddressPort = (dns, port)
     bufferSize = 2048
-    
+
     # Create a UDP socket at client side
-    UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-    
+    UDPClientSocket = socket.socket(
+        family=socket.AF_INET, type=socket.SOCK_DGRAM)
+
     # Send to server using created UDP socket
     UDPClientSocket.sendto(base64.b64decode(data), serverAddressPort)
-    
-    #tener cuidado por que lo se podria estar manejando como texto
+
+    # tener cuidado por que lo se podria estar manejando como texto
     msgFromServer = UDPClientSocket.recvfrom(bufferSize)
-    
-    #Lo devulve en base 64
-    return base64.b64encode(msgFromServer) 
+
+    # Lo devulve en base 64
+    return base64.b64encode(msgFromServer)
 
 
 # Start the Server
