@@ -28,6 +28,7 @@ services:
     build: 
       context: ./ #carpeta con el dockerfile
       dockerfile: Dockerfile # Archivo de imagen 
+    container_name: restapi
     ports: 
     - "443:443"  
 

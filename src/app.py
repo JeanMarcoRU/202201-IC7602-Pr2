@@ -37,11 +37,14 @@ def encodemsj():
 
 
 @app.route("/api/dns_resolver", methods=['POST'])
-def decodemsj():
+def dns_resolver():
     
     # Recibe los bytes en base64
     data = request.args.get("data") #http://127.0.0.1:443/api/dns_resolver?data=UHl0aG9uIG==
-    print(base64.b64decode(data))
+    #rint(base64.b64decode(data))
+    
+    with open("log.txt", "wb") as f:
+        f.write(base64.b64decode(data))
     
     dns = "8.8.8.8"
     port = 53

@@ -178,7 +178,7 @@ int b64_decode(const char *in, unsigned char *out, size_t outlen)
 
 int main(int argc, char **argv)
 {
-	const char *data = "hola mundo jm";
+	unsigned char data = "hola mundo jm";
 	char       *enc;
 	char       *out;
 	size_t      out_len;
