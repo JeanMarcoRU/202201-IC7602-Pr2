@@ -52,7 +52,7 @@ def decodemsj():
     UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
     
     # Send to server using created UDP socket
-    UDPClientSocket.sendto(data, serverAddressPort)
+    UDPClientSocket.sendto(base64.b64decode(data), serverAddressPort)
     
     msgFromServer = UDPClientSocket.recvfrom(bufferSize)
     
