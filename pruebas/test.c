@@ -8,28 +8,15 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
-#define BYTE_TO_BINARY(byte)       \
-    (byte & 0x80 ? '1' : '0'),     \
-        (byte & 0x40 ? '1' : '0'), \
-        (byte & 0x20 ? '1' : '0'), \
-        (byte & 0x10 ? '1' : '0'), \
-        (byte & 0x08 ? '1' : '0'), \
-        (byte & 0x04 ? '1' : '0'), \
-        (byte & 0x02 ? '1' : '0'), \
-        (byte & 0x01 ? '1' : '0')
-
-#define PORT 53
-#define MAXSIZE 2048
-
 const char b64chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-const int b64invs[] = {62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58,
-                       59, 60, 61, -1, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3, 4, 5,
-                       6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                       21, 22, 23, 24, 25, -1, -1, -1, -1, -1, -1, 26, 27, 28,
-                       29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
-                       43, 44, 45, 46, 47, 48, 49, 50, 51};
+const int b64invs[] = { 62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58,
+	59, 60, 61, -1, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3, 4, 5,
+	6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+	21, 22, 23, 24, 25, -1, -1, -1, -1, -1, -1, 26, 27, 28,
+	29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
+	43, 44, 45, 46, 47, 48, 49, 50, 51 };
+
 
 // Since a little math is involved to determine the encoded size we’ll use this simple function to help us out.
 size_t b64_encoded_size(size_t inlen)
@@ -189,74 +176,36 @@ int b64_decode(const char *in, unsigned char *out, size_t outlen)
 	return 1;
 }
 
-int main()
+int main(int argc, char **argv)
 {
-    int sock;
-    int addr_len, bytes_read;
-    unsigned char buffer[MAXSIZE];
-    struct sockaddr_in server_addr, client_addr;
+	const char *data = "hola mundo jm";
+	char       *enc;
+	char       *out;
+	size_t      out_len;
 
-    if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
-    {
-        perror("Socket");
-        exit(1);
-    }
+	printf("data:    '%s'\n", data);
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(PORT);
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    bzero(&(server_addr.sin_zero), 8);
+	enc = b64_encode((const unsigned char *)data, strlen(data));
+	printf("encoded: '%s'\n", enc);
 
-    if (bind(sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) == -1)
-    {
-        perror("Bind");
-        exit(1);
-    }
+	printf("dec size %s data size\n", b64_decoded_size(enc) == strlen(data) ? "==" : "!=");
 
-    addr_len = sizeof(struct sockaddr);
+	/* +1 for the NULL terminator. */
+	out_len = b64_decoded_size(enc)+1;
+	out = malloc(out_len);
 
-    printf("UDPServer Waiting for client on port 53\n");
-    fflush(stdout);
+	if (!b64_decode(enc, (unsigned char *)out, out_len)) {
+		printf("Decode Failure\n");
+		return 1;
+	}
+	//out[out_len] = '\0';
     FILE *f1;
+    f1 = fopen("logtest.txt", "wb");
+    fwrite(out, 1, out_len, f1);
+    fclose(f1);
+	//printf("dec:     '%s'\n", out);
+	printf("data %s dec\n", strcmp(data, out) == 0 ? "==" : "!=");
+	free(out);
 
-    while (1)
-    {
-
-        // recibe el mensaje
-        bytes_read = recvfrom(sock, buffer, 1024, 0, (struct sockaddr *)&client_addr, &addr_len);
-        f1 = fopen("log.txt", "wb");
-        fwrite(buffer, 1, bytes_read, f1);
-        printf("se leyo %d\n", bytes_read);
-        if (buffer[2] & 0x01 && (buffer[2] & 0x1e) == 0)
-        {
-            printf("encontre lo que busco\n");
-        }
-
-        // buffer[bytes_read] = '\0';
-        /*for (int i = 0; i < bytes_read; i+=2)
-        {
-            char l[9], h[9];
-            sprintf(l, BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(buffer[i]));
-            sprintf(h, BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(buffer[i+1]));
-            //printf("+----------------+\n|%c%c|\n", buffer[i], buffer[i+1]);
-            //printf("+----------------+\n|%s%s|\n", l, h);
-        }*/
-
-        /*char *end_msj = malloc(MAXSIZE);
-        sprintf(end_msj, "Server: %s\n", buffer);
-
-        // envia el mensaje
-        if (sendto(sock, end_msj, strlen(end_msj), 0, (struct sockaddr *)&client_addr, addr_len) == -1)
-        {
-            printf("Error: sendto()");
-        }*/
-
-        fflush(stdout);
-        fclose(f1);
-        /*if (bytes_read > 0)
-        {
-            break;
-        }*/
-    }
-    return 0;
+	return 0;
 }
