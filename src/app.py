@@ -46,7 +46,7 @@ def decodemsj():
     dns = "8.8.8.8"
     port = 53
     serverAddressPort = (dns, port)
-    bufferSize = 2024
+    bufferSize = 2048
     
     # Create a UDP socket at client side
     UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
