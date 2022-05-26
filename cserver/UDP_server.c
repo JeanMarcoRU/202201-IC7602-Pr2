@@ -243,11 +243,10 @@ int main()
         bytes_read = recvfrom(sock, buffer, 1024, 0, (struct sockaddr *)&client_addr, &addr_len);
         f1 = fopen("log.txt", "wb");
         fwrite(buffer, 1, bytes_read, f1);
-        printf("se leyo %d\n", bytes_read);
 
         if (buffer[2] & 0x01 && (buffer[2] & 0x1e) == 0)
         {
-            printf("encontre lo que busco\n");
+            printf("\nLlegó un paquete query estándar.\n");
         }
 
         /*
@@ -256,6 +255,7 @@ int main()
         Funte del codigo: https://nachtimwald.com/2017/11/18/base64-encode-and-decode-in-c/
         */
         char *enc;
+        char response[512] = {'\0'};
         size_t out_len;
 
         enc = b64_encode(buffer, bytes_read);
@@ -263,7 +263,7 @@ int main()
 
         // char *urllink = "http://localhost:443/api/dns_resolver";
         char *datapost = malloc(MAXSIZE);
-        sprintf(datapost, "http://localhost:443/api/dns_resolver?data=%s", enc);
+        sprintf(datapost, "http://172.19.0.2:443/api/dns_resolver?data=%s", enc);
 
         CURL *curl;
         CURLcode res;
@@ -282,7 +282,7 @@ int main()
 
             /* Now specify we want to POST data */
             curl_easy_setopt(curl, CURLOPT_POST, 1L);
-
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
             /* Perform the request, res will get the return code */
             res = curl_easy_perform(curl);
             /* Check for errors */
@@ -300,7 +300,7 @@ int main()
         el decode en se guarda en 'out'
         */
         /* +1 for the NULL terminator. */
-        out_len = b64_decoded_size(enc);
+        out_len = b64_decoded_size(response);
         unsigned char out[out_len];
         // out = malloc(out_len);
 

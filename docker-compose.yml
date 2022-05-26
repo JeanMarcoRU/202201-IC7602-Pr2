@@ -11,19 +11,22 @@ services:
       - "53:53/udp"
     depends_on:
       - restapi
-    #networks:
-    #  - hogar
-    network_mode: host
+    networks:
+      - hogar
+    #network_mode: host
 
   restapi:
     build: 
-      context: ./ #carpeta con el dockerfile
+      context: ./restapi #carpeta con el dockerfile
       dockerfile: Dockerfile # Archivo de imagen 
     container_name: restapi
     ports: 
     - "443:443"  
     networks:
-      - hogar
+      hogar: 
+        ipv4_address: 172.19.0.2
+    volumes:
+      - ./restapi/app.py:/app/src/app.py
 
 #client:
   #build: ./cliente
@@ -40,4 +43,7 @@ services:
 networks:
   hogar:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.19.0.0/28
 
