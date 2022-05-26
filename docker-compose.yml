@@ -9,10 +9,23 @@ services:
     command: bash -c "cd /root/app/ && gcc -o server server.c -lcurl && ./server"
     ports:
       - "53:53/udp"
+    depends_on:
+      - restapi
+    #networks:
+    #  - hogar
+    network_mode: host
+
+  restapi:
+    build: 
+      context: ./ #carpeta con el dockerfile
+      dockerfile: Dockerfile # Archivo de imagen 
+    container_name: restapi
+    ports: 
+    - "443:443"  
     networks:
       - hogar
 
-  #client:
+#client:
   #build: ./cliente
   #container_name: cliente
   #command: bash -c "nslookup https://w3.cs.jmu.edu/kirkpams/OpenCSF/Books/csf/html/UDPSockets.html"
@@ -24,17 +37,7 @@ services:
   #networks:
   #  - hogar
 
-  restapi:
-    build: 
-      context: ./ #carpeta con el dockerfile
-      dockerfile: Dockerfile # Archivo de imagen 
-    container_name: restapi
-    ports: 
-    - "443:443"  
-
 networks:
   hogar:
-    ipam:
-      config:
-        - subnet: 1.0.0.0/29
+    driver: bridge
 

@@ -47,7 +47,7 @@ def dns_resolver():
     with open("log.txt", "wb") as f:
         f.write(base64.b64decode(data))
 
-    dns = "8.8.8.8"
+    '''dns = "8.8.8.8"
     port = 53
     serverAddressPort = (dns, port)
     bufferSize = 2048
@@ -63,7 +63,8 @@ def dns_resolver():
     msgFromServer = UDPClientSocket.recvfrom(bufferSize)
 
     # Lo devulve en base 64
-    return base64.b64encode(msgFromServer)
+    return base64.b64encode(msgFromServer)'''
+    return "holaaa"
 
 
 # Start the Server
