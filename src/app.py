@@ -43,28 +43,29 @@ def dns_resolver():
     # http://127.0.0.1:443/api/dns_resolver?data=aG9sYSBtdW5kbyBYRA==
     data = request.args.get("data")
     # rint(base64.b64decode(data))
+    
+    decodedata =  base64.b64decode(data)
 
     with open("log.txt", "wb") as f:
-        f.write(base64.b64decode(data))
+        f.write(decodedata)
 
-    '''dns = "8.8.8.8"
-    port = 53
-    serverAddressPort = (dns, port)
+
+    serverAddressPort = ("8.8.8.8", 53)  
     bufferSize = 2048
 
     # Create a UDP socket at client side
-    UDPClientSocket = socket.socket(
-        family=socket.AF_INET, type=socket.SOCK_DGRAM)
+    sock = socket.socket(socket.AF_INET,
+        socket.SOCK_DGRAM) 
 
     # Send to server using created UDP socket
-    UDPClientSocket.sendto(base64.b64decode(data), serverAddressPort)
+    sock.sendto(decodedata, serverAddressPort) #Send message to UDP port
 
     # tener cuidado por que lo se podria estar manejando como texto
-    msgFromServer = UDPClientSocket.recvfrom(bufferSize)
-
+    msgFromServer = sock.recvfrom(bufferSize)
+    #print(msgFromServer)
+    print("Message from Server {}".format(msgFromServer[0]))
     # Lo devulve en base 64
-    return base64.b64encode(msgFromServer)'''
-    return "holaaa"
+    return base64.b64encode(msgFromServer)
 
 
 # Start the Server

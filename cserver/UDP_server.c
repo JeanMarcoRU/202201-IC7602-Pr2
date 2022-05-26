@@ -279,11 +279,9 @@ int main()
                just as well be a https:// URL if that is what should receive the
                data. */
             curl_easy_setopt(curl, CURLOPT_URL, datapost);
+
             /* Now specify we want to POST data */
             curl_easy_setopt(curl, CURLOPT_POST, 1L);
-            /* if we do not provide POSTFIELDSIZE, libcurl will strlen() by
-            itself */
-            // curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, MAXSIZE - 1);
 
             /* Perform the request, res will get the return code */
             res = curl_easy_perform(curl);
