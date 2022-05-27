@@ -11,4 +11,4 @@ RUN apt install -y xxd
 
 COPY . .
 
-CMD ["python", "src/app.py"]
+CMD ["python", "app.py"]

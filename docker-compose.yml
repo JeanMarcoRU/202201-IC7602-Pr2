@@ -10,10 +10,8 @@ services:
     ports:
       - "53:53/udp"
     depends_on:
-      - restapi
-    networks:
-      - hogar
-    #network_mode: host
+      - restapi    
+    network_mode: host
 
   restapi:
     build: 
@@ -23,10 +21,8 @@ services:
     ports: 
     - "443:443"  
     networks:
-      hogar: 
-        ipv4_address: 172.19.0.2
-    volumes:
-      - ./restapi/app.py:/app/src/app.py
+      - hogar 
+        
 
 #client:
   #build: ./cliente
@@ -43,7 +39,7 @@ services:
 networks:
   hogar:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.19.0.0/28
+    #ipam:
+    #  config:
+    #    - subnet: 172.19.0.0/28
 

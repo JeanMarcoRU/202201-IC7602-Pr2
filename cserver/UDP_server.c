@@ -32,6 +32,11 @@ const int b64invs[] = {62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58,
                        29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
                        43, 44, 45, 46, 47, 48, 49, 50, 51};
 
+static size_t writeCallback(void *contents, size_t size, size_t nitems, FILE *file)
+{
+    return fwrite(contents, size, nitems, file);
+}
+
 // Since a little math is involved to determine the encoded size we’ll use this simple function to help us out.
 size_t b64_encoded_size(size_t inlen)
 {
@@ -234,7 +239,7 @@ int main()
     printf("UDPServer Waiting for client on port 53\n");
     fflush(stdout);
     FILE *f1;
-    FILE *f2;
+    //FILE *f2;
 
     while (1)
     {
@@ -255,7 +260,7 @@ int main()
         Funte del codigo: https://nachtimwald.com/2017/11/18/base64-encode-and-decode-in-c/
         */
         char *enc;
-        char response[512] = {'\0'};
+        // char response[MAXSIZE];
         size_t out_len;
 
         enc = b64_encode(buffer, bytes_read);
@@ -263,7 +268,14 @@ int main()
 
         // char *urllink = "http://localhost:443/api/dns_resolver";
         char *datapost = malloc(MAXSIZE);
-        sprintf(datapost, "http://172.19.0.2:443/api/dns_resolver?data=%s", enc);
+        sprintf(datapost, "http://localhost:443/api/dns_resolver?data=%s", enc);
+
+        FILE *file = fopen("recived.txt", "wb");
+        if (!file)
+        {
+            fprintf(stderr, "Could not open output file.\n");
+            return 1;
+        }
 
         CURL *curl;
         CURLcode res;
@@ -282,7 +294,13 @@ int main()
 
             /* Now specify we want to POST data */
             curl_easy_setopt(curl, CURLOPT_POST, 1L);
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
+
+            /* When data arrives, curl will call writeCallback. */
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+
+            /* The last argument to writeCallback will be our file: */
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)file);
+
             /* Perform the request, res will get the return code */
             res = curl_easy_perform(curl);
             /* Check for errors */
@@ -294,48 +312,35 @@ int main()
             curl_easy_cleanup(curl);
         }
         curl_global_cleanup();
+        // response[bytes_out] = '\0';
+        // printf("by_o: %d\n",bytes_out);
+        // printf("response: %s\n",response);
 
         /*
         Convierte de base64 a binario
         el decode en se guarda en 'out'
         */
         /* +1 for the NULL terminator. */
+        /*
         out_len = b64_decoded_size(response);
         unsigned char out[out_len];
         // out = malloc(out_len);
 
-        if (!b64_decode(enc, out, out_len))
+        if (!b64_decode(response, out, out_len))
         {
             printf("Decode Failure\n");
             return 1;
-        }
+        }*/
 
         // lo guarda en un txt para comprobar que no hay perdida de datos
-        f2 = fopen("logtest.txt", "wb");
-        fwrite(out, 1, out_len, f2);
+        /*f2 = fopen("logrecived.txt", "wb");
+        fwrite(out, 1, out_len, f2);*/
 
-        // buffer[bytes_read] = '\0';
-        /*for (int i = 0; i < bytes_read; i+=2)
-        {
-            char l[9], h[9];
-            sprintf(l, BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(buffer[i]));
-            sprintf(h, BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(buffer[i+1]));
-            //printf("+----------------+\n|%c%c|\n", buffer[i], buffer[i+1]);
-            //printf("+----------------+\n|%s%s|\n", l, h);
-        }*/
-
-        /*char *end_msj = malloc(MAXSIZE);
-        sprintf(end_msj, "Server: %s\n", buffer);
-
-        // envia el mensaje
-        if (sendto(sock, end_msj, strlen(end_msj), 0, (struct sockaddr *)&client_addr, addr_len) == -1)
-        {
-            printf("Error: sendto()");
-        }*/
+        fclose(file);
         free(datapost);
         fflush(stdout);
         fclose(f1);
-        fclose(f2);
+        //fclose(f2);
     }
     return 0;
 }
