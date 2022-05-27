@@ -314,21 +314,16 @@ int main()
         curl_global_cleanup();
         fclose(file);
 
-        // modificar
         FILE *archivo = fopen("received.txt", "r"); // Modo lectura
         char todecode[MAXSIZE];                    // Aquí vamos a ir almacenando cada línea
         fgets(todecode, MAXSIZE, archivo);
         fclose(archivo);
 
-        // La imprimimos, pero realmente podríamos hacer cualquier otra cosa
-        //printf("La línea es: '%s'\n", todecode);
-
         /*
         Convierte de base64 a binario
         el decode en se guarda en 'out'
         */
-        /* +1 for the NULL terminator. */
-        
+        /* +1 for the NULL terminator. */        
         out_len = b64_decoded_size(todecode);
         unsigned char out[out_len];
         // out = malloc(out_len);
