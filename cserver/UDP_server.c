@@ -339,6 +339,11 @@ int main()
         fwrite(out, 1, out_len, f2);
         fclose(f2);
 
+        if (sendto(sock, out, out_len, 0, (struct sockaddr *)&client_addr, addr_len) == -1)
+        {
+            printf("Error: sendto()");
+        }
+
         free(datapost);
         fflush(stdout);        
         
