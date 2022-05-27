@@ -239,7 +239,7 @@ int main()
     printf("UDPServer Waiting for client on port 53\n");
     fflush(stdout);
     FILE *f1;
-    // FILE *f2;
+    FILE *f2;
 
     while (1)
     {
@@ -248,6 +248,7 @@ int main()
         bytes_read = recvfrom(sock, buffer, 1024, 0, (struct sockaddr *)&client_addr, &addr_len);
         f1 = fopen("log.txt", "wb");
         fwrite(buffer, 1, bytes_read, f1);
+        fclose(f1);
 
         if (buffer[2] & 0x01 && (buffer[2] & 0x1e) == 0)
         {
@@ -269,7 +270,7 @@ int main()
         char *datapost = malloc(MAXSIZE);
         sprintf(datapost, "http://localhost:443/api/dns_resolver?data=%s", enc);
 
-        FILE *file = fopen("recived.txt", "wb");
+        FILE *file = fopen("received.txt", "wb");
         if (!file)
         {
             fprintf(stderr, "Could not open output file.\n");
@@ -314,46 +315,38 @@ int main()
         fclose(file);
 
         // modificar
-        FILE *ptr;
-        char ch;
-        ptr = fopen("recived.txt", "r");
-        if (NULL == ptr)
-        {
-            printf("file can't be opened \n");
-        }
-        printf("content of this file are \n");
-        while (ch != EOF)
-        {
-            ch = fgetc(ptr);
-            printf("%c", ch);
-        }
-        fclose(ptr);
+        FILE *archivo = fopen("received.txt", "r"); // Modo lectura
+        char todecode[MAXSIZE];                    // Aquí vamos a ir almacenando cada línea
+        fgets(todecode, MAXSIZE, archivo);
+        fclose(archivo);
+
+        // La imprimimos, pero realmente podríamos hacer cualquier otra cosa
+        //printf("La línea es: '%s'\n", todecode);
 
         /*
         Convierte de base64 a binario
         el decode en se guarda en 'out'
         */
         /* +1 for the NULL terminator. */
-        /*
-        out_len = b64_decoded_size(response);
+        
+        out_len = b64_decoded_size(todecode);
         unsigned char out[out_len];
         // out = malloc(out_len);
 
-        if (!b64_decode(response, out, out_len))
+        if (!b64_decode(todecode, out, out_len))
         {
             printf("Decode Failure\n");
             return 1;
-        }*/
+        }
 
         // lo guarda en un txt para comprobar que no hay perdida de datos
-        /*f2 = fopen("logrecived.txt", "wb");
-        fwrite(out, 1, out_len, f2);*/
+        f2 = fopen("nslookup.txt", "wb");
+        fwrite(out, 1, out_len, f2);
+        fclose(f2);
 
-        
         free(datapost);
-        fflush(stdout);
-        fclose(f1);
-        // fclose(f2);
+        fflush(stdout);        
+        
     }
     return 0;
 }

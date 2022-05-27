@@ -40,13 +40,11 @@ def dns_resolver():
 
     # tener cuidado por que lo se podria estar manejando como texto
     msgFromServer = sock.recvfrom(bufferSize)
-    print("Message from Server {}".format(msgFromServer[0]))
     with open("log2.txt", "wb") as f:
         f.write(msgFromServer[0])
     os.system("hexyl log2.txt")
     
     # Lo devulve en base 64
-    #print("return:"+ base64.b64encode(msgFromServer[0]).decode('ascii'))
     return base64.b64encode(msgFromServer[0]).decode('ascii')
 
 
