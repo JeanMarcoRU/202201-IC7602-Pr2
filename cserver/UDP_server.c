@@ -260,7 +260,6 @@ int main()
         Funte del codigo: https://nachtimwald.com/2017/11/18/base64-encode-and-decode-in-c/
         */
         char *enc;
-        // char response[MAXSIZE];
         size_t out_len;
 
         enc = b64_encode(buffer, bytes_read);
