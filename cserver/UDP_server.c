@@ -239,7 +239,7 @@ int main()
     printf("UDPServer Waiting for client on port 53\n");
     fflush(stdout);
     FILE *f1;
-    //FILE *f2;
+    // FILE *f2;
 
     while (1)
     {
@@ -311,9 +311,23 @@ int main()
             curl_easy_cleanup(curl);
         }
         curl_global_cleanup();
-        // response[bytes_out] = '\0';
-        // printf("by_o: %d\n",bytes_out);
-        // printf("response: %s\n",response);
+        fclose(file);
+
+        // modificar
+        FILE *ptr;
+        char ch;
+        ptr = fopen("recived.txt", "r");
+        if (NULL == ptr)
+        {
+            printf("file can't be opened \n");
+        }
+        printf("content of this file are \n");
+        while (ch != EOF)
+        {
+            ch = fgetc(ptr);
+            printf("%c", ch);
+        }
+        fclose(ptr);
 
         /*
         Convierte de base64 a binario
@@ -335,11 +349,11 @@ int main()
         /*f2 = fopen("logrecived.txt", "wb");
         fwrite(out, 1, out_len, f2);*/
 
-        fclose(file);
+        
         free(datapost);
         fflush(stdout);
         fclose(f1);
-        //fclose(f2);
+        // fclose(f2);
     }
     return 0;
 }
