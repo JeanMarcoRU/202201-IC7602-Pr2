@@ -1,211 +1,184 @@
+// Example code: A simple server side code, which echos back the received message.
+// Handle multiple socket connections with select and fd_set on Linux
+#include <stdio.h>
+#include <string.h> //strlen
+#include <stdlib.h>
+#include <errno.h>
+#include <unistd.h>	   //close;
+#include <arpa/inet.h> //close;
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <stdlib.h>
+#include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
 
-const char b64chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+#define TRUE 1
+#define FALSE 0
+#define PORT 8888
 
-const int b64invs[] = { 62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58,
-	59, 60, 61, -1, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3, 4, 5,
-	6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-	21, 22, 23, 24, 25, -1, -1, -1, -1, -1, -1, 26, 27, 28,
-	29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
-	43, 44, 45, 46, 47, 48, 49, 50, 51 };
-
-
-// Since a little math is involved to determine the encoded size we’ll use this simple function to help us out.
-size_t b64_encoded_size(size_t inlen)
+int main(int argc, char *argv[])
 {
-	size_t ret;
+	int opt = TRUE;
+	int master_socket, addrlen, new_socket, client_socket[30],
+		max_clients = 30, activity, i, valread, sd;
+	int max_sd;
+	struct sockaddr_in address;
 
-	ret = inlen;
-	if (inlen % 3 != 0)
-		ret += 3 - (inlen % 3);
-	ret /= 3;
-	ret *= 4;
+	char buffer[1025]; // data buffer of 1K
 
-	return ret;
-}
+	// set of socket descriptors
+	fd_set readfds;
 
-/*
-Now we need to move the mapping table. 
-Unlike decoding this is an array which we’ll reference by index as we encode. 
-This table is used to turn 3 byte sequences into characters.
-*/
-char *b64_encode(const unsigned char *in, size_t len)
-{
-	char   *out;
-	size_t  elen;
-	size_t  i;
-	size_t  j;
-	size_t  v;
+	// a message
+	char *message = "ECHO Daemon v1.0 \r\n";
 
-	if (in == NULL || len == 0)
-		return NULL;
+	// initialise all client_socket[] to 0 so not checked
+	for (i = 0; i < max_clients; i++)
+	{
+		client_socket[i] = 0;
+	}
 
-	elen = b64_encoded_size(len);
-	out  = malloc(elen+1);
-	out[elen] = '\0';
+	// create a master socket
+	if ((master_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+	{
+		perror("socket failed");
+		exit(EXIT_FAILURE);
+	}
 
-	for (i=0, j=0; i<len; i+=3, j+=4) {
-		v = in[i];
-		v = i+1 < len ? v << 8 | in[i+1] : v << 8;
-		v = i+2 < len ? v << 8 | in[i+2] : v << 8;
+	// set master socket to allow multiple connections ,
+	// this is just a good habit, it will work without this
+	if (setsockopt(master_socket, SOL_SOCKET, SO_REUSEADDR, (char *)&opt,
+				   sizeof(opt)) < 0)
+	{
+		perror("setsockopt");
+		exit(EXIT_FAILURE);
+	}
 
-		out[j]   = b64chars[(v >> 18) & 0x3F];
-		out[j+1] = b64chars[(v >> 12) & 0x3F];
-		if (i+1 < len) {
-			out[j+2] = b64chars[(v >> 6) & 0x3F];
-		} else {
-			out[j+2] = '=';
+	// type of socket created
+	address.sin_family = AF_INET;
+	address.sin_addr.s_addr = INADDR_ANY;
+	address.sin_port = htons(PORT);
+
+	// bind the socket to localhost port 8888
+	if (bind(master_socket, (struct sockaddr *)&address, sizeof(address)) < 0)
+	{
+		perror("bind failed");
+		exit(EXIT_FAILURE);
+	}
+	printf("Listener on port %d \n", PORT);
+
+	// try to specify maximum of 3 pending connections for the master socket
+	if (listen(master_socket, 3) < 0)
+	{
+		perror("listen");
+		exit(EXIT_FAILURE);
+	}
+
+	// accept the incoming connection
+	addrlen = sizeof(address);
+	puts("Waiting for connections ...");
+
+	while (TRUE)
+	{
+		// clear the socket set
+		FD_ZERO(&readfds);
+
+		// add master socket to set
+		FD_SET(master_socket, &readfds);
+		max_sd = master_socket;
+
+		// add child sockets to set
+		for (i = 0; i < max_clients; i++)
+		{
+			// socket descriptor
+			sd = client_socket[i];
+
+			// if valid socket descriptor then add to read list
+			if (sd > 0)
+				FD_SET(sd, &readfds);
+
+			// highest file descriptor number, need it for the select function
+			if (sd > max_sd)
+				max_sd = sd;
 		}
-		if (i+2 < len) {
-			out[j+3] = b64chars[v & 0x3F];
-		} else {
-			out[j+3] = '=';
+
+		// wait for an activity on one of the sockets , timeout is NULL ,
+		// so wait indefinitely
+		activity = select(max_sd + 1, &readfds, NULL, NULL, NULL);
+
+		if ((activity < 0) && (errno != EINTR))
+		{
+			printf("select error");
+		}
+
+		// If something happened on the master socket ,
+		// then its an incoming connection
+		if (FD_ISSET(master_socket, &readfds))
+		{
+			if ((new_socket = accept(master_socket,
+									 (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
+			{
+				perror("accept");
+				exit(EXIT_FAILURE);
+			}
+
+			// inform user of socket number - used in send and receive commands
+			printf("New connection , socket fd is %d , ip is : %s , port : %d \n", new_socket, inet_ntoa(address.sin_addr), ntohs(address.sin_port));
+
+			// send new connection greeting message
+			if (send(new_socket, message, strlen(message), 0) != strlen(message))
+			{
+				perror("send");
+			}
+
+			puts("Welcome message sent successfully");
+
+			// add new socket to array of sockets
+			for (i = 0; i < max_clients; i++)
+			{
+				// if position is empty
+				if (client_socket[i] == 0)
+				{
+					client_socket[i] = new_socket;
+					printf("Adding to list of sockets as %d\n", i);
+
+					break;
+				}
+			}
+		}
+
+		// else its some IO operation on some other socket
+		for (i = 0; i < max_clients; i++)
+		{
+			sd = client_socket[i];
+
+			if (FD_ISSET(sd, &readfds))
+			{
+				// Check if it was for closing , and also read the
+				// incoming message
+				if ((valread = read(sd, buffer, 1024)) == 0)
+				{
+					// Somebody disconnected , get his details and print
+					getpeername(sd, (struct sockaddr *)&address,
+								(socklen_t *)&addrlen);
+					printf("Host disconnected , ip %s , port %d \n",
+						   inet_ntoa(address.sin_addr), ntohs(address.sin_port));
+
+					// Close the socket and mark as 0 in list for reuse
+					close(sd);
+					client_socket[i] = 0;
+				}
+
+				// Echo back the message that came in
+				else
+				{
+					// set the string terminating NULL byte on the end
+					// of the data read
+					buffer[valread] = '\0';
+					send(sd, buffer, strlen(buffer), 0);
+				}
+			}
 		}
 	}
-
-	return out;
-}
-
-/*
-Much like encoding, we need to do some math to determine binary data size 
-of some Base64 encoded data we might have.
-*/
-size_t b64_decoded_size(const char *in)
-{
-	size_t len;
-	size_t ret;
-	size_t i;
-
-	if (in == NULL)
-		return 0;
-
-	len = strlen(in);
-	ret = len / 4 * 3;
-
-	for (i=len; i-->0; ) {
-		if (in[i] == '=') {
-			ret--;
-		} else {
-			break;
-		}
-	}
-
-	return ret;
-}
-
-/*
-I don’t know about you but I hate magic numbers someone on the internet says to use. 
-I’m fine with using them as long as I can verify they’re correct.
-*/
-void b64_generate_decode_table()
-{
-	int    inv[80];
-	size_t i;
-
-	memset(inv, -1, sizeof(inv));
-	for (i=0; i<sizeof(b64chars)-1; i++) {
-		inv[b64chars[i]-43] = i;
-	}
-}
-
-/*
-We need to subtract 43 to shift + to be the 0 index. Once we run this function we’ll end up with the above
-encoding table. It’s a better idea to use the precomputed table than generate it anew for every decode.
-*/
-int b64_isvalidchar(char c)
-{
-	if (c >= '0' && c <= '9')
-		return 1;
-	if (c >= 'A' && c <= 'Z')
-		return 1;
-	if (c >= 'a' && c <= 'z')
-		return 1;
-	if (c == '+' || c == '/' || c == '=')
-		return 1;
-	return 0;
-}
-
-/*
-We’ll need a verification function to check if characters are are valid for the base64 character set. This should be
-expanded to handle newlines, deal with line length requirements, ignore whitespace if necessary, and verify there
-are two or less = , and = is only present at the end. Verification could also happen in the main decode function
-instead of being split out. I find it easier to split it out otherwise the decode function becomes more difficult 
-to understand.
-*/
-int b64_decode(const char *in, unsigned char *out, size_t outlen)
-{
-	size_t len;
-	size_t i;
-	size_t j;
-	int    v;
-
-	if (in == NULL || out == NULL)
-		return 0;
-
-	len = strlen(in);
-	if (outlen < b64_decoded_size(in) || len % 4 != 0)
-		return 0;
-
-	for (i=0; i<len; i++) {
-		if (!b64_isvalidchar(in[i])) {
-			return 0;
-		}
-	}
-
-	for (i=0, j=0; i<len; i+=4, j+=3) {
-		v = b64invs[in[i]-43];
-		v = (v << 6) | b64invs[in[i+1]-43];
-		v = in[i+2]=='=' ? v << 6 : (v << 6) | b64invs[in[i+2]-43];
-		v = in[i+3]=='=' ? v << 6 : (v << 6) | b64invs[in[i+3]-43];
-
-		out[j] = (v >> 16) & 0xFF;
-		if (in[i+2] != '=')
-			out[j+1] = (v >> 8) & 0xFF;
-		if (in[i+3] != '=')
-			out[j+2] = v & 0xFF;
-	}
-
-	return 1;
-}
-
-int main(int argc, char **argv)
-{
-	unsigned char data = "hola mundo jm";
-	char       *enc;
-	char       *out;
-	size_t      out_len;
-
-	printf("data:    '%s'\n", data);
-
-	enc = b64_encode((const unsigned char *)data, strlen(data));
-	printf("encoded: '%s'\n", enc);
-
-	printf("dec size %s data size\n", b64_decoded_size(enc) == strlen(data) ? "==" : "!=");
-
-	/* +1 for the NULL terminator. */
-	out_len = b64_decoded_size(enc)+1;
-	out = malloc(out_len);
-
-	if (!b64_decode(enc, (unsigned char *)out, out_len)) {
-		printf("Decode Failure\n");
-		return 1;
-	}
-	//out[out_len] = '\0';
-    FILE *f1;
-    f1 = fopen("logtest.txt", "wb");
-    fwrite(out, 1, out_len, f1);
-    fclose(f1);
-	//printf("dec:     '%s'\n", out);
-	printf("data %s dec\n", strcmp(data, out) == 0 ? "==" : "!=");
-	free(out);
 
 	return 0;
 }

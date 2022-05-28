@@ -16,7 +16,7 @@
       "stopAtEntry": false,
       "externalConsole": false,
       "cwd": "/home/jean/Documentos/GitHub/202201-IC7602-Pr2",
-      "program": "/home/jean/Documentos/GitHub/202201-IC7602-Pr2/build/Debug/outDebug",
+      "program": "/home/jean/Documentos/GitHub/202201-IC7602-Pr2/build/Release/outRelease",
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/gdb",
       "setupCommands": [
