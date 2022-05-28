@@ -18,8 +18,8 @@ services:
     container_name: restapi
     ports: 
     - "443:443"  
-    networks:
-      - hogar 
+    #networks:
+    #  - hogar 
         
 
 #client:
@@ -34,9 +34,9 @@ services:
   #networks:
   #  - hogar
 
-networks:
-  hogar:
-    driver: bridge
+#networks:
+#  hogar:
+#    driver: bridge
     #ipam:
     #  config:
     #    - subnet: 172.19.0.0/28
