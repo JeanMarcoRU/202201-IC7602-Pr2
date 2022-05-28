@@ -1,4 +1,7 @@
 FROM ubuntu
+
+WORKDIR /root/app
+
 RUN apt-get update --fix-missing
 RUN apt install -y libcurl4-openssl-dev --fix-missing
 RUN apt install -y gcc
