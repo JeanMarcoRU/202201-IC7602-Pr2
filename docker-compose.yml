@@ -46,8 +46,11 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
     restart: always
     environment:
-      - xpack.security.enable=false
+      #- xpack.security.enable=false
       - discovery.type=single-node
+      #- cluster.name=docker-cluster
+      # - "http.host=0.0.0.0"
+      # - "transport.host=127.0.0.1"
     ulimits:
       memlock:
         soft: -1
@@ -70,6 +73,8 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     ports:
       - 5601:5601
+    volumes:
+      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
     depends_on:
       - elasticsearch
 
