@@ -43,7 +43,7 @@ services:
 
   elasticsearch:
     container_name: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
     restart: always
     environment:
       - xpack.security.enable=false
@@ -64,7 +64,7 @@ services:
   
   kibana:
     container_name: kibana
-    image: docker.elastic.co/kibana/kibana:7.4.0
+    image: docker.elastic.co/kibana/kibana:7.8.1
     restart: always
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
