@@ -21,36 +21,12 @@ services:
     #networks:
     #  - hogar 
         
-
-#client:
-  #build: ./cliente
-  #container_name: cliente
-  #command: bash -c "nslookup https://w3.cs.jmu.edu/kirkpams/OpenCSF/Books/csf/html/UDPSockets.html"
-  #command: bash -c "nslookup www.google.com"
-  #depends_on:
-  #  - cserver
-  #volumes:
-  #  - ./cliente/resolv.conf:/etc/resolv.conf
-  #networks:
-  #  - hogar
-
-#networks:
-#  hogar:
-#    driver: bridge
-    #ipam:
-    #  config:
-    #    - subnet: 172.19.0.0/28
-
   elasticsearch:
     container_name: elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
     restart: always
     environment:
-      #- xpack.security.enable=false
       - discovery.type=single-node
-      #- cluster.name=docker-cluster
-      # - "http.host=0.0.0.0"
-      # - "transport.host=127.0.0.1"
     ulimits:
       memlock:
         soft: -1
