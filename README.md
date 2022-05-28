@@ -3,6 +3,7 @@
 # Instrucciones de ejecución
 Copie y pegue en una terminal levantada en la raíz del proyecto los siguientes comandos:
 ```
+docker-compose build
 docker-compose up -d
 docker exec -it cliente bash
 ```
