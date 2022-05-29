@@ -61,3 +61,4 @@ Podemos usar curl
 curl -X POST http://127.0.0.1:443/encode/api/dns_resolver?msj=mensaje
 curl -X POST http://127.0.0.1:443/decode/api/dns_resolver?msj=bWVuc2FqZQ==
 ```
+## Para Elasticsearch & Kibana
