@@ -62,3 +62,8 @@ curl -X POST http://127.0.0.1:443/encode/api/dns_resolver?msj=mensaje
 curl -X POST http://127.0.0.1:443/decode/api/dns_resolver?msj=bWVuc2FqZQ==
 ```
 ## Para Elasticsearch & Kibana
+
+Insertar datos:
+```
+curl -X POST "http://localhost:9200/zones/_doc/?pretty" -H 'Content-Type: application/json' -d '{"hostname": "www.google.com","TTL": "5","IP": "10.0.5.2"}'
+```
