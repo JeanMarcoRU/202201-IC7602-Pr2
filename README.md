@@ -67,3 +67,13 @@ Insertar datos:
 ```
 curl -X POST "http://localhost:9200/zones/_doc/?pretty" -H 'Content-Type: application/json' -d '{"hostname": "www.google.com","TTL": "5","IP": "10.0.5.2"}'
 ```
+
+Eliminar datos:
+```
+curl -X DELETE "localhost:9200/zones/_doc/<id>"
+```
+
+Obtener datos: 
+```
+curl -X GET http://0.0.0.0:9200/zones/_doc/_search?q=hostname:www.google.com
+```
