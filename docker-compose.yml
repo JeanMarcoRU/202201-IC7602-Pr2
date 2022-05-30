@@ -6,9 +6,12 @@ services:
     container_name: cserver
     volumes:
       - ./cserver:/root/app
-    command: bash -c "cd /root/app/ && gcc -o server server.c -lcurl && ./server"
+    command: bash -c "cd /root/app/ && gcc -o server server.c -lcurl && tail -F dev/null"
     ports:
       - "53:53/udp"   
+    networks:
+      localhost:
+        ipv4_address: 1.0.0.7
     #network_mode: host
 
   restapi:
@@ -18,42 +21,53 @@ services:
     container_name: restapi
     ports: 
     - "443:443"  
-    #networks:
-    #  - hogar 
+    networks:
+      localhost:
+        ipv4_address: 1.0.0.6
         
-  #elasticsearch:
-  #  container_name: elasticsearch
-  #  image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
-  #  restart: always
-  #  environment:
-  #    - discovery.type=single-node
-  #  ulimits:
-  #    memlock:
-  #      soft: -1
-  #      hard: -1
-  #    nofile:
-  #      soft: 65536
-  #      hard: 65536
-  #  cap_add:
-  #    - IPC_LOCK
-  #  volumes:
-  #    - elasticsearch-data-volume:/usr/share/elasticsearch/data
-  #  ports:
-  #    - 9200:9200
-  #
-  #kibana:
-  #  container_name: kibana
-  #  image: docker.elastic.co/kibana/kibana:7.8.1
-  #  restart: always
-  #  environment:
-  #    - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-  #  ports:
-  #    - 5601:5601
-  #  volumes:
-  #    - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
-  #  depends_on:
-  #    - elasticsearch
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
+    environment:
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - elasticsearch-data-volume:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      localhost:
+        ipv4_address: 1.0.0.4
+  
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:7.8.1
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - 5601:5601
+    volumes:
+      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    depends_on:
+      - elasticsearch
+    networks:
+      localhost:
+        ipv4_address: 1.0.0.5
 
 volumes:
   elasticsearch-data-volume:
     driver: local
+
+networks:
+  localhost:
+    ipam:
+      config:
+        - subnet: 1.0.0.0/27

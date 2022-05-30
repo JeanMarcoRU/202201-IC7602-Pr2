@@ -320,9 +320,9 @@ int main()
             printf("Domain name: %s\n", hostname);
             
             char *dataget = malloc(MAXSIZE);
-            sprintf(dataget, "http://0.0.0.0:9200/zones/_doc/_search?q=hostname:%s", hostname);
+            sprintf(dataget, "http://1.0.0.4:9200/zones/_doc/_search?q=hostname:%s", hostname);
 
-            FILE *file = fopen("registro.json", "wb");
+            FILE *file = fopen("registro.json", "w");
             if (!file)
             {
                 fprintf(stderr, "Could not open output file.\n");
@@ -359,14 +359,13 @@ int main()
             ssize_t read;
             
             read = getline(&texto, &len, f1);
-            if (texto[strcspn(texto, "[]") + 2] != ']') { //Esto quiere decir que hay matches
-                fseek( )
-                fscanf(f1, "\"TTL\": \"%d\",\"IP\": \"%s\"}}]}}", &ttl, str_ip); //     "TTL": "[0-9]+",
-                
+            if (texto[2] == 't' && texto[strcspn(texto, "[]") + 1] != ']') { //Esto quiere decir que hay matches
+                fseek(f1, strcspn(texto, "T"), SEEK_SET);
+                fscanf(f1, "TTL\": \"%d\",\"IP\": \"%s,", &ttl, str_ip); //     "TTL": "[0-9]+",
 
-                str_ip[strcspn(str_ip,",\"") + 1] = '\0';
+                str_ip[strcspn(str_ip,",\"")] = '\0';
                 // DEPURACIÓN
-                printf("ttl: %d, ip: %s\n", ttl, str_ip);
+                //printf("ttl: %d, ip: %s\n", ttl, str_ip);
                 
                 generar_paquete(buffer, bytes_read, ttl, inet_addr(str_ip));
                 f2 = fopen("log2.txt", "wb");
@@ -382,18 +381,19 @@ int main()
                 continue;
             }
             fclose(f1);
+            
         }
 
         // el encode en base64 se guarda en 'enc'
         // Fuente del codigo: https://nachtimwald.com/2017/11/18/base64-encode-and-decode-in-c/
 
-        /*
+        
         enc = b64_encode(buffer, bytes_read);
             printf("encoded: '%s'\n", enc);
 
             // char *urllink = "http://localhost:443/api/dns_resolver";
             char *datapost = malloc(MAXSIZE);
-            sprintf(datapost, "http://localhost:443/api/dns_resolver?data=%s", enc);
+            sprintf(datapost, "http://1.0.0.6:443/api/dns_resolver?data=%s", enc);
 
             FILE *file = fopen("received.txt", "wb");
             if (!file)
@@ -421,7 +421,7 @@ int main()
         curl_global_cleanup();
         free(datapost);
         fclose(file);
-        */
+        
 
         FILE *archivo = fopen("received.txt", "r"); // Modo lectura
         char todecode[MAXSIZE];                     // Aquí vamos a ir almacenando cada línea
