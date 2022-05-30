@@ -320,7 +320,7 @@ int main()
             printf("Domain name: %s\n", hostname);
             
             char *dataget = malloc(MAXSIZE);
-            sprintf(dataget, "http://1.0.0.4:9200/zones/_doc/_search?q=hostname:%s", hostname);
+            sprintf(dataget, "http://localhost:9200/zones/_doc/_search?q=hostname:%s", hostname);
 
             FILE *file = fopen("registro.json", "w");
             if (!file)
@@ -393,7 +393,7 @@ int main()
 
             // char *urllink = "http://localhost:443/api/dns_resolver";
             char *datapost = malloc(MAXSIZE);
-            sprintf(datapost, "http://1.0.0.6:443/api/dns_resolver?data=%s", enc);
+            sprintf(datapost, "http://localhost:443/api/dns_resolver?data=%s", enc);
 
             FILE *file = fopen("received.txt", "wb");
             if (!file)

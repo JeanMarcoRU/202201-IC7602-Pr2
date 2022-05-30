@@ -5,14 +5,11 @@ services:
     build: ./cserver
     container_name: cserver
     volumes:
-      - ./cserver:/root/app
-    command: bash -c "cd /root/app/ && gcc -o server server.c -lcurl && tail -F dev/null"
+      - ./cserver:/root/app/
+    command: bash -c "cd /root/app/ && gcc -o server server.c -lcurl && ./server"
     ports:
       - "53:53/udp"   
-    networks:
-      localhost:
-        ipv4_address: 1.0.0.7
-    #network_mode: host
+    network_mode: host
 
   restapi:
     build: 
@@ -21,9 +18,6 @@ services:
     container_name: restapi
     ports: 
     - "443:443"  
-    networks:
-      localhost:
-        ipv4_address: 1.0.0.6
         
   elasticsearch:
     container_name: elasticsearch
@@ -43,9 +37,6 @@ services:
       - elasticsearch-data-volume:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
-    networks:
-      localhost:
-        ipv4_address: 1.0.0.4
   
   kibana:
     container_name: kibana
@@ -58,16 +49,7 @@ services:
       - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
     depends_on:
       - elasticsearch
-    networks:
-      localhost:
-        ipv4_address: 1.0.0.5
 
 volumes:
   elasticsearch-data-volume:
     driver: local
-
-networks:
-  localhost:
-    ipam:
-      config:
-        - subnet: 1.0.0.0/27
