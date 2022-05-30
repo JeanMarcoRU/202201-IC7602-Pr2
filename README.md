@@ -77,3 +77,8 @@ Obtener datos:
 ```
 curl -X GET http://0.0.0.0:9200/zones/_doc/_search?q=hostname:www.google.com
 ```
+
+Modificar datos:
+```
+curl -X POST "localhost:9200/zones/_doc/<id>/_update?pretty" -H 'Content-Type: application/json' -d '{"doc": { "hostname": "www.google.com", "TTL": "5", "IP": "10.0.0.0"}}'
+```
