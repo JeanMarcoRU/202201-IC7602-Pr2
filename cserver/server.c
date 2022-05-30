@@ -299,6 +299,17 @@ int main()
         if (buffer[2] & 0x01 && (buffer[2] & 0x1e) == 0)
         {
             printf("\nLlegó un paquete query estándar.\n");
+            
+            char *hostname = "www.google.com";
+            
+            int i = 12;
+            while (buffer[i] != 0){
+                if (buffer[i] < '-' || (buffer[i] > '9' && buffer[i] < 'A') 
+                    || (buffer[i] > 'Z' && buffer[i] < 'a') || buffer[i] > 'z'){
+                        // No es un caracter admitido, se interpreta como el inicio de una hilera.
+                    }
+            }
+
             int registro[2];
             leer_registro(registro);
             generar_paquete(buffer, bytes_read, registro[0], registro[1]);
