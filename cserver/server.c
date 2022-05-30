@@ -210,6 +210,54 @@ int b64_decode(const char *in, unsigned char *out, size_t outlen)
     return 1;
 }
 
+void leer_registro(int out[2])
+{
+    FILE *fptr;
+    fptr = fopen("registro.json", "r");
+
+    char str_ip[17] = {'\0'};
+    int ttl;
+
+    size_t len = 0;
+    char *buffer;
+    ssize_t read;
+    read = getline(&buffer, &len, fptr);          // Esta es la línea que tiene solo el {
+    read = getline(&buffer, &len, fptr);          // Esta línea tiene el nombre de dominio
+    fscanf(fptr, "    \"TTL\": \"%d\",\n", &ttl); //     "TTL": "[0-9]+",
+    fscanf(fptr, "    \"IP\": \"%s\"\n", str_ip); //    "IP": "10.0.5.2"
+    fclose(fptr);
+
+    str_ip[strlen(str_ip) - 1] = '\0';
+    // DEPURACIÓN
+    // printf("ttl: %d, ip: %s\n", ttl, str_ip);
+
+    out[0] = ttl;
+    out[1] = inet_addr(str_ip);
+}
+
+void generar_paquete(unsigned char *consulta, int qs, int ttl, int ip)
+{
+    consulta[2] = 0x81;
+    consulta[3] = 0x80;
+    consulta[7] = 1;
+    consulta[qs] = 0xc0;
+    consulta[qs + 1] = 0x0c;
+    consulta[qs + 2] = 0x00;
+    consulta[qs + 3] = 0x01;
+    consulta[qs + 4] = 0x00;
+    consulta[qs + 5] = 0x01;
+    consulta[qs + 6] = 0x00;
+    consulta[qs + 7] = 0x00;
+    consulta[qs + 8] = (unsigned char)(ttl & 0xff00) >> 4;
+    consulta[qs + 9] = (unsigned char)(ttl & 0xff);
+    consulta[qs + 10] = 0x00;
+    consulta[qs + 11] = 0x04;
+    consulta[qs + 12] = (ip & 0xff);
+    consulta[qs + 13] = (ip & 0xff00) >> 8;
+    consulta[qs + 14] = (ip & 0xff0000) >> 16;
+    consulta[qs + 15] = (ip & 0xff000000) >> 24;
+}
+
 int main()
 {
     int sock;
@@ -250,18 +298,95 @@ int main()
         fwrite(buffer, 1, bytes_read, f1);
         fclose(f1);
 
+        char *enc;
+        size_t out_len;
+
         if (buffer[2] & 0x01 && (buffer[2] & 0x1e) == 0)
         {
             printf("\nLlegó un paquete query estándar.\n");
+            // para consultar elasticsearch se requiere el nombre de dominio del paquete
+            char hostname[MAXSIZE] = {'\0'};
+
+            int i = 12;
+            int k = 0;
+            while (buffer[i] != 0)
+            {
+                for (int j = i + 1; j <= i + buffer[i]; j++)
+                    hostname[k++] = buffer[j];
+                i += buffer[i] + 1;
+                if (buffer[i] != 0)
+                    hostname[k++] = '.';
+            }
+
+            printf("Domain name: %s\n", hostname);
+
+            char *dataget = malloc(MAXSIZE);
+            sprintf(dataget, "http://localhost:9200/zones/_doc/_search?q=hostname:%s", hostname);
+
+            FILE *file = fopen("registro.json", "w");
+            if (!file)
+            {
+                fprintf(stderr, "Could not open output file.\n");
+                return 1;
+            }
+
+            CURL *curl;
+            CURLcode res;
+            curl_global_init(CURL_GLOBAL_ALL);
+            curl = curl_easy_init();
+            if (curl)
+            {
+                curl_easy_setopt(curl, CURLOPT_URL, dataget);
+                curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
+                curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+                curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)file);
+                res = curl_easy_perform(curl);
+                if (res != CURLE_OK)
+                    fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                            curl_easy_strerror(res));
+                curl_easy_cleanup(curl);
+            }
+            curl_global_cleanup();
+            free(dataget);
+            fclose(file);
+            // if resultado ==
+            f1 = fopen("registro.json", "r");
+
+            char str_ip[17] = {'\0'};
+            int ttl;
+
+            size_t len = 0;
+            char *texto;
+            ssize_t read;
+
+            read = getline(&texto, &len, f1);
+            if (texto[2] == 't' && texto[strcspn(texto, "[]") + 1] != ']')
+            { // Esto quiere decir que hay matches
+                fseek(f1, strcspn(texto, "T"), SEEK_SET);
+                fscanf(f1, "TTL\": \"%d\",\"IP\": \"%s,", &ttl, str_ip); //     "TTL": "[0-9]+",
+
+                str_ip[strcspn(str_ip, ",\"")] = '\0';
+                // DEPURACIÓN
+                // printf("ttl: %d, ip: %s\n", ttl, str_ip);
+
+                generar_paquete(buffer, bytes_read, ttl, inet_addr(str_ip));
+                f2 = fopen("log2.txt", "wb");
+                fwrite(buffer, 1, bytes_read + 16, f2);
+                fclose(f2);
+
+                if (sendto(sock, buffer, bytes_read + 16, 0, (struct sockaddr *)&client_addr, addr_len) == -1)
+                {
+                    printf("Error: sendto()");
+                }
+
+                fflush(stdout);
+                continue;
+            }
+            fclose(f1);
         }
 
-        /*
-        convierte a base64 el buffer (binario)
-        el encode en base64 se guarda en 'enc'
-        Funte del codigo: https://nachtimwald.com/2017/11/18/base64-encode-and-decode-in-c/
-        */
-        char *enc;
-        size_t out_len;
+        // el encode en base64 se guarda en 'enc'
+        // Fuente del codigo: https://nachtimwald.com/2017/11/18/base64-encode-and-decode-in-c/
 
         enc = b64_encode(buffer, bytes_read);
         printf("encoded: '%s'\n", enc);
@@ -279,51 +404,29 @@ int main()
 
         CURL *curl;
         CURLcode res;
-
-        /* In windows, this will init the winsock stuff */
         curl_global_init(CURL_GLOBAL_ALL);
-
-        /* get a curl handle */
         curl = curl_easy_init();
         if (curl)
         {
-            /* First set the URL that is about to receive our POST. This URL can
-               just as well be a https:// URL if that is what should receive the
-               data. */
             curl_easy_setopt(curl, CURLOPT_URL, datapost);
-
-            /* Now specify we want to POST data */
             curl_easy_setopt(curl, CURLOPT_POST, 1L);
-
-            /* When data arrives, curl will call writeCallback. */
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
-
-            /* The last argument to writeCallback will be our file: */
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)file);
-
-            /* Perform the request, res will get the return code */
             res = curl_easy_perform(curl);
-            /* Check for errors */
             if (res != CURLE_OK)
                 fprintf(stderr, "curl_easy_perform() failed: %s\n",
                         curl_easy_strerror(res));
-
-            /* always cleanup */
             curl_easy_cleanup(curl);
         }
         curl_global_cleanup();
+        free(datapost);
         fclose(file);
 
         FILE *archivo = fopen("received.txt", "r"); // Modo lectura
-        char todecode[MAXSIZE];                    // Aquí vamos a ir almacenando cada línea
+        char todecode[MAXSIZE];                     // Aquí vamos a ir almacenando cada línea
         fgets(todecode, MAXSIZE, archivo);
         fclose(archivo);
 
-        /*
-        Convierte de base64 a binario
-        el decode en se guarda en 'out'
-        */
-        /* +1 for the NULL terminator. */        
         out_len = b64_decoded_size(todecode);
         unsigned char out[out_len];
         // out = malloc(out_len);
@@ -338,15 +441,12 @@ int main()
         f2 = fopen("nslookup.txt", "wb");
         fwrite(out, 1, out_len, f2);
         fclose(f2);
-
         if (sendto(sock, out, out_len, 0, (struct sockaddr *)&client_addr, addr_len) == -1)
         {
             printf("Error: sendto()");
         }
 
-        free(datapost);
-        fflush(stdout);        
-        
+        fflush(stdout);
     }
     return 0;
 }

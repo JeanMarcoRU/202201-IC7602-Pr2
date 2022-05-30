@@ -3,6 +3,7 @@
 # Instrucciones de ejecución
 Copie y pegue en una terminal levantada en la raíz del proyecto los siguientes comandos:
 ```
+docker-compose build
 docker-compose up -d
 docker exec -it cliente bash
 ```
@@ -59,4 +60,20 @@ Podemos usar curl
 ```
 curl -X POST http://127.0.0.1:443/encode/api/dns_resolver?msj=mensaje
 curl -X POST http://127.0.0.1:443/decode/api/dns_resolver?msj=bWVuc2FqZQ==
+```
+## Para Elasticsearch & Kibana
+
+Insertar datos:
+```
+curl -X POST "http://localhost:9200/zones/_doc/?pretty" -H 'Content-Type: application/json' -d '{"hostname": "www.google.com","TTL": "5","IP": "10.0.5.2"}'
+```
+
+Eliminar datos:
+```
+curl -X DELETE "localhost:9200/zones/_doc/<id>"
+```
+
+Obtener datos: 
+```
+curl -X GET http://0.0.0.0:9200/zones/_doc/_search?q=hostname:www.google.com
 ```

@@ -5,7 +5,7 @@ services:
     build: ./cserver
     container_name: cserver
     volumes:
-      - ./cserver/UDP_server.c:/root/app/server.c
+      - ./cserver:/root/app/
     command: bash -c "cd /root/app/ && gcc -o server server.c -lcurl && ./server"
     ports:
       - "53:53/udp"   
@@ -18,26 +18,38 @@ services:
     container_name: restapi
     ports: 
     - "443:443"  
-    #networks:
-    #  - hogar 
         
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
+    environment:
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - elasticsearch-data-volume:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+  
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:7.8.1
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - 5601:5601
+    volumes:
+      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    depends_on:
+      - elasticsearch
 
-#client:
-  #build: ./cliente
-  #container_name: cliente
-  #command: bash -c "nslookup https://w3.cs.jmu.edu/kirkpams/OpenCSF/Books/csf/html/UDPSockets.html"
-  #command: bash -c "nslookup www.google.com"
-  #depends_on:
-  #  - cserver
-  #volumes:
-  #  - ./cliente/resolv.conf:/etc/resolv.conf
-  #networks:
-  #  - hogar
-
-#networks:
-#  hogar:
-#    driver: bridge
-    #ipam:
-    #  config:
-    #    - subnet: 172.19.0.0/28
-
+volumes:
+  elasticsearch-data-volume:
+    driver: local
