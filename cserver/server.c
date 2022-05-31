@@ -350,7 +350,7 @@ int main()
             free(dataget);
             fclose(file);
             // if resultado ==
-            f1 = fopen("registro.json", "r");
+            f1 = fopen("test.json", "r");
 
             char str_ip[17] = {'\0'};
             int ttl;
@@ -363,7 +363,7 @@ int main()
             if (texto[2] == 't' && texto[strcspn(texto, "[]") + 1] != ']')
             { // Esto quiere decir que hay matches
                 fseek(f1, strcspn(texto, "T"), SEEK_SET);
-                fscanf(f1, "TTL\": \"%d\",\"IP\": \"%s,", &ttl, str_ip); //     "TTL": "[0-9]+",
+                fscanf(f1, "TTL\": \"%d\",\"IP\": \"%s", &ttl, str_ip); //     "TTL": "[0-9]+",
                 read = getline(&texto, &len, f1);
                 
                 if (str_ip[strcspn(str_ip, ",\"")] == ','){
@@ -375,11 +375,12 @@ int main()
                     otrosIPs[s++] = ' ';
                     for (int z = 0; z < strlen(str_ip) - 1; z++)
                         otrosIPs[s + z] = str_ip[z];
-                    //otrosIPs[strlen(otrosIPs)-strlen(str_ip)] = '\0';
                     printf("Para actualizar la base: %s\n", otrosIPs);
-                } else {
-                    str_ip[strcspn(str_ip, ",\"")] = '\0';
-                }
+                    // hacer update en elasticsearch
+                } 
+                
+                str_ip[strcspn(str_ip, ",\"")] = '\0';
+                
                 generar_paquete(buffer, bytes_read, ttl, inet_addr(str_ip));
                 
                 f2 = fopen("log2.txt", "wb");
