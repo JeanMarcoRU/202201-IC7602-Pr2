@@ -1,27 +1,22 @@
 #### Jean Marco Rojas - 2015040717, Esteban Cruz - 2018104794, María Madrigal - 2018186563
 
 # Instrucciones de ejecución
-Copie y pegue en una terminal levantada en la raíz del proyecto los siguientes comandos:
+Copie y pegue en una terminal levantada en la raíz del proyecto el siguiente comando para construir y ejecutar el proyecto:
 ```
-docker-compose build
-docker-compose up -d
-docker exec -it cliente bash
+docker-compose up -d --build
 ```
-Después de esto se le abrirá una consola con dnsutils instalado, por lo que podrá ejecutar el comando
-```
-nslookup www.facebook.com
-```
-Una vez hecho esto puede ver en los logs del server udp lo que recibe el señor servidor udp en caracteres por medio del siguiente comando:
+Después de esto podrá probar nuestro proyecto haciendo peticiones dns al servidor local por medio de nslookup.
+El servidor imprime datos importantes para la comprensión de su funcionamiento, por lo que con el siguiente comando se puede ver lo que le llegó y lo que hizo con eso.
 ```
 docker logs cserver
 ```
-Para observar los bytes del paquete enviado se ejecuta
+En este proyecto se crean archivos binarios para validar la no pérdida de paquetes, los cuales con la aplicación hexyl se imprimen de manera muy bonita, por lo que se puede ejecutar el siguiente comando para ver el último paquete que arribó al DNS interceptor.
 ```
-hexyl log.txt
+hexyl cserver/log.txt
 ```
 Para comprobar dicho archivo en binario, se ejecuta
 ```
-xxd -b log.txt
+xxd -b cserver/log2.txt
 ```
 
 ## Para el Api REST
