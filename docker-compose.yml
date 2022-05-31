@@ -9,7 +9,6 @@ services:
     command: bash -c "cd /root/app/ && gcc -o server server.c -lcurl && ./server"
     ports:
       - "53:53/udp"   
-    network_mode: host
 
   restapi:
     build: 

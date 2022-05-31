@@ -320,7 +320,7 @@ int main()
             printf("Domain name: %s\n", hostname);
             
             char *dataget = malloc(MAXSIZE);
-            sprintf(dataget, "http://localhost:9200/zones/_doc/_search?q=hostname:%s", hostname);
+            sprintf(dataget, "http://elasticsearch:9200/zones/_doc/_search?q=hostname:%s", hostname);
 
             FILE *file = fopen("registro.json", "w");
             if (!file)
@@ -368,14 +368,15 @@ int main()
                 //printf("ttl: %d, ip: %s\n", ttl, str_ip);
                 
                 generar_paquete(buffer, bytes_read, ttl, inet_addr(str_ip));
+                
                 f2 = fopen("log2.txt", "wb");
                 fwrite(buffer, 1, bytes_read + 16, f2);
                 fclose(f2);
 
-                if (sendto(sock, buffer, bytes_read + 16, 0, (struct sockaddr *)&client_addr, addr_len) == -1)
-                {
-                    printf("Error: sendto()");
-                }
+                printf("Se resolvió sin ir al api.");
+
+                sendto(sock, buffer, bytes_read + 16, 0, (struct sockaddr *)&client_addr, addr_len) == -1
+                
 
                 fflush(stdout);
                 continue;
@@ -391,9 +392,9 @@ int main()
         enc = b64_encode(buffer, bytes_read);
             printf("encoded: '%s'\n", enc);
 
-            // char *urllink = "http://localhost:443/api/dns_resolver";
-            char *datapost = malloc(MAXSIZE);
-            sprintf(datapost, "http://localhost:443/api/dns_resolver?data=%s", enc);
+        // char *urllink = "http://localhost:443/api/dns_resolver";
+        char *datapost = malloc(MAXSIZE);
+        sprintf(datapost, "http://restapi:443/api/dns_resolver?data=%s", enc);
 
             FILE *file = fopen("received.txt", "wb");
             if (!file)
