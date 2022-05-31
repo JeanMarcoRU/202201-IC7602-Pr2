@@ -1,1 +1,1 @@
-{"error":{"root_cause":[{"type":"index_not_found_exception","reason":"no such index [zones]","resource.type":"index_or_alias","resource.id":"zones","index_uuid":"_na_","index":"zones"}],"type":"index_not_found_exception","reason":"no such index [zones]","resource.type":"index_or_alias","resource.id":"zones","index_uuid":"_na_","index":"zones"},"status":404}
+{"took":2,"timed_out":false,"_shards":{"total":1,"successful":1,"skipped":0,"failed":0},"hits":{"total":{"value":0,"relation":"eq"},"max_score":null,"hits":[]}}
