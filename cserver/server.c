@@ -248,8 +248,8 @@ void generar_paquete(unsigned char *consulta, int qs, int ttl, int ip)
     consulta[qs + 5] = 0x01;
     consulta[qs + 6] = 0x00;
     consulta[qs + 7] = 0x00;
-    consulta[qs + 8] = (unsigned char)(ttl & 0xff00) >> 4;
-    consulta[qs + 9] = (unsigned char)(ttl & 0xff);
+    consulta[qs + 8] = (ttl & 0xff00) >> 8;
+    consulta[qs + 9] = (ttl & 0xff);
     consulta[qs + 10] = 0x00;
     consulta[qs + 11] = 0x04;
     consulta[qs + 12] = (ip & 0xff);
@@ -364,20 +364,31 @@ int main()
             { // Esto quiere decir que hay matches
                 fseek(f1, strcspn(texto, "T"), SEEK_SET);
                 fscanf(f1, "TTL\": \"%d\",\"IP\": \"%s,", &ttl, str_ip); //     "TTL": "[0-9]+",
-
-                str_ip[strcspn(str_ip, ",\"")] = '\0';
-                // DEPURACIÓN
-                // printf("ttl: %d, ip: %s\n", ttl, str_ip);
-
+                read = getline(&texto, &len, f1);
+                
+                if (str_ip[strcspn(str_ip, ",\"")] == ','){
+                    char otrosIPs[300];
+                    for (int z = 0; z < strlen(texto) - 6; z++)
+                        otrosIPs[z] = texto[z + 1];
+                    short s = strcspn(otrosIPs, "\"");
+                    otrosIPs[s++] = ',';
+                    otrosIPs[s++] = ' ';
+                    for (int z = 0; z < strlen(str_ip) - 1; z++)
+                        otrosIPs[s + z] = str_ip[z];
+                    //otrosIPs[strlen(otrosIPs)-strlen(str_ip)] = '\0';
+                    printf("Para actualizar la base: %s\n", otrosIPs);
+                } else {
+                    str_ip[strcspn(str_ip, ",\"")] = '\0';
+                }
                 generar_paquete(buffer, bytes_read, ttl, inet_addr(str_ip));
                 
                 f2 = fopen("log2.txt", "wb");
                 fwrite(buffer, 1, bytes_read + 16, f2);
                 fclose(f2);
 
-                printf("Se resolvió sin ir al api.");
+                printf("Se resolvió sin ir al api.\n");
 
-                sendto(sock, buffer, bytes_read + 16, 0, (struct sockaddr *)&client_addr, addr_len) == -1
+                sendto(sock, buffer, bytes_read + 16, 0, (struct sockaddr *)&client_addr, addr_len);
                 
 
                 fflush(stdout);
