@@ -353,6 +353,7 @@ int main()
             f1 = fopen("registro.json", "r");
 
             char str_ip[17] = {'\0'};
+            char id[21] = {'\0'};
             int ttl;
 
             size_t len = 0;
@@ -362,10 +363,19 @@ int main()
             read = getline(&texto, &len, f1);
             if (texto[2] == 't' && texto[strcspn(texto, "[]") + 1] != ']')
             { // Esto quiere decir que hay matches
-                fseek(f1, strcspn(texto, "T"), SEEK_SET);
-                fscanf(f1, "TTL\": \"%d\",\"IP\":\"%s", &ttl, str_ip); //     "TTL": "[0-9]+",
+                fseek(f1, 0, SEEK_SET);
+                while (1)
+                    if (fgetc(f1) == ',' && fgetc(f1) == '"'){
+                        if ((texto[0] = fgetc(f1)) == '_' && fgetc(f1) == 'i' && fgetc(f1) == 'd' && fgetc(f1) && fgetc(f1) && fgetc(f1))
+                            fgets(id, 21, f1);
+                        else if (texto[0] == 'T')
+                            break;
+                    }
+                            
+                
+                fscanf(f1, "TL\": \"%d\",\"IP\":\"%s", &ttl, str_ip); //     "TTL": "[0-9]+",
                 read = getline(&texto, &len, f1);
-                printf("TTL: %d, IP: %s, Texto: %s\n", ttl, str_ip, texto);
+                printf("TTL: %d, IP: %s id: %s\n", ttl, str_ip, id);
                 if (str_ip[strcspn(str_ip, ",\"")] == ','){
                     char otrosIPs[300];
                     for (int z = 0; z < strlen(texto) - 6; z++)
