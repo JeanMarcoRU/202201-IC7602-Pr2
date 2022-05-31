@@ -350,7 +350,7 @@ int main()
             free(dataget);
             fclose(file);
             // if resultado ==
-            f1 = fopen("test.json", "r");
+            f1 = fopen("registro.json", "r");
 
             char str_ip[17] = {'\0'};
             int ttl;
@@ -363,9 +363,9 @@ int main()
             if (texto[2] == 't' && texto[strcspn(texto, "[]") + 1] != ']')
             { // Esto quiere decir que hay matches
                 fseek(f1, strcspn(texto, "T"), SEEK_SET);
-                fscanf(f1, "TTL\": \"%d\",\"IP\": \"%s", &ttl, str_ip); //     "TTL": "[0-9]+",
+                fscanf(f1, "TTL\": \"%d\",\"IP\":\"%s", &ttl, str_ip); //     "TTL": "[0-9]+",
                 read = getline(&texto, &len, f1);
-                
+                printf("TTL: %d, IP: %s, Texto: %s\n", ttl, str_ip, texto);
                 if (str_ip[strcspn(str_ip, ",\"")] == ','){
                     char otrosIPs[300];
                     for (int z = 0; z < strlen(texto) - 6; z++)
