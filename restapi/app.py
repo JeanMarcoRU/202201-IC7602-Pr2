@@ -6,8 +6,6 @@ import os
 app = Flask(__name__)
 
 # Routes
-
-
 @app.route("/", methods=["GET"])
 def ping():
     return "hola mundo rest API"

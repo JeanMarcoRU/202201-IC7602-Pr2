@@ -373,7 +373,7 @@ int main()
                     }
                             
                 
-                fscanf(f1, "TL\": \"%d\",\"IP\":\"%s", &ttl, str_ip); //     "TTL": "[0-9]+",
+                fscanf(f1, "TL\": \"%d\",\"IP\": \"%s", &ttl, str_ip); //     "TTL": "[0-9]+",
                 read = getline(&texto, &len, f1);
                 printf("TTL: %d, IP: %s id: %s\n", ttl, str_ip, id);
                 if (str_ip[strcspn(str_ip, ",\"")] == ','){
