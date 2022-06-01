@@ -365,18 +365,19 @@ int main()
             { // Esto quiere decir que hay matches
                 fseek(f1, 0, SEEK_SET);
                 while (1)
-                    if (fgetc(f1) == ',' && fgetc(f1) == '"'){
+                    if (fgetc(f1) == ',' && fgetc(f1) == '"')
+                    {
                         if ((texto[0] = fgetc(f1)) == '_' && fgetc(f1) == 'i' && fgetc(f1) == 'd' && fgetc(f1) && fgetc(f1) && fgetc(f1))
                             fgets(id, 21, f1);
                         else if (texto[0] == 'T')
                             break;
                     }
-                            
-                
+
                 fscanf(f1, "TL\": \"%d\",\"IP\": \"%s", &ttl, str_ip); //     "TTL": "[0-9]+",
                 read = getline(&texto, &len, f1);
                 printf("TTL: %d, IP: %s id: %s\n", ttl, str_ip, id);
-                if (str_ip[strcspn(str_ip, ",\"")] == ','){
+                if (str_ip[strcspn(str_ip, ",\"")] == ',')
+                {
                     char otrosIPs[300];
                     for (int z = 0; z < strlen(texto) - 6; z++)
                         otrosIPs[z] = texto[z + 1];
@@ -386,13 +387,23 @@ int main()
                     for (int z = 0; z < strlen(str_ip) - 1; z++)
                         otrosIPs[s + z] = str_ip[z];
                     printf("Para actualizar la base: %s\n", otrosIPs);
+
                     // hacer update en elasticsearch
-                } 
-                
+                    char *datapost = malloc(MAXSIZE);
+                    sprintf(datapost, "curl -X POST \"elasticsearch:9200/zones/_doc/%s/_update?pretty\" -H 'Content-Type: application/json' -d '{\"doc\": {\"IP\": \"%s\"}}'", id, otrosIPs);
+
+                    int status = system(datapost);
+
+                    printf("estatus: %d\n", status);
+                    
+                    free(datapost);
+                   
+                }
+
                 str_ip[strcspn(str_ip, ",\"")] = '\0';
-                
+
                 generar_paquete(buffer, bytes_read, ttl, inet_addr(str_ip));
-                
+
                 f2 = fopen("log2.txt", "wb");
                 fwrite(buffer, 1, bytes_read + 16, f2);
                 fclose(f2);
@@ -400,7 +411,6 @@ int main()
                 printf("Se resolvió sin ir al api.\n");
 
                 sendto(sock, buffer, bytes_read + 16, 0, (struct sockaddr *)&client_addr, addr_len);
-                
 
                 fflush(stdout);
                 fclose(f1);
@@ -469,7 +479,8 @@ int main()
         {
             printf("Error: sendto()!!!!!!!!!!!!!!!\n");
         }
-        else {
+        else
+        {
             printf("El api resolvió con éxito.\n");
         }
 
