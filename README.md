@@ -9,7 +9,7 @@ docker-compose up
 
 Para entrar dentro de un contenedor de ser necesario, usamos:
 ```
-docker exec -it restapi bash
+docker exec -it <container> bash
 ```
 
 Después de esto podrá probar nuestro proyecto haciendo peticiones dns al servidor local por medio de nslookup.
