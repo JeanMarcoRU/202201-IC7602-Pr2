@@ -1,6 +1,6 @@
 FROM python:3.8.10
 
-WORKDIR /app
+WORKDIR /root/app
 
 COPY requirements.txt requirements.txt
 
@@ -9,6 +9,6 @@ RUN apt-get update
 RUN apt install -y hexyl
 RUN apt install -y xxd
 
-COPY . .
+#COPY . .
 
 CMD ["python", "app.py"]

@@ -25,8 +25,9 @@ def dns_resolver():
         
     os.system("hexyl log.txt")
 
-
-    serverAddressPort = ("8.8.8.8", 53)  
+    with open ('config.txt','r') as f:
+        dns = f.read()
+    serverAddressPort = (dns, 53)  
     bufferSize = 2048
 
     # Create a UDP socket at client side
