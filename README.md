@@ -3,8 +3,15 @@
 # Instrucciones de ejecución
 Copie y pegue en una terminal levantada en la raíz del proyecto el siguiente comando para construir y ejecutar el proyecto:
 ```
-docker-compose up -d --build
+docker-compose build
+docker-compose up
 ```
+
+Para entrar dentro de un contenedor de ser necesario, usamos:
+```
+docker exec -it restapi bash
+```
+
 Después de esto podrá probar nuestro proyecto haciendo peticiones dns al servidor local por medio de nslookup.
 El servidor imprime datos importantes para la comprensión de su funcionamiento, por lo que con el siguiente comando se puede ver lo que le llegó y lo que hizo con eso.
 ```
