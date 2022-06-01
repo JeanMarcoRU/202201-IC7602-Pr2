@@ -403,6 +403,7 @@ int main()
                 
 
                 fflush(stdout);
+                fclose(f1);
                 continue;
             }
             fclose(f1);
@@ -466,7 +467,10 @@ int main()
         fclose(f2);
         if (sendto(sock, out, out_len, 0, (struct sockaddr *)&client_addr, addr_len) == -1)
         {
-            printf("Error: sendto()");
+            printf("Error: sendto()!!!!!!!!!!!!!!!\n");
+        }
+        else {
+            printf("El api resolvió con éxito.\n");
         }
 
         fflush(stdout);
