@@ -367,7 +367,7 @@ void *thread_function(void *arg){
 
                 sendto(sock, buffer, bytes_read + 16, 0, (struct sockaddr *)&client_addr, addr_len);
 
-                fflush(stdout);
+                fflush(stdout);pthread_mutex_unlock(&mutex);
                 return NULL;
             }
             fclose(fptr);
@@ -405,8 +405,7 @@ void *thread_function(void *arg){
                         curl_easy_strerror(res));
             curl_easy_cleanup(curl);
         }
-        curl_global_cleanup();
-        
+        curl_global_cleanup();        
         fclose(fptr);
 
         fptr = fopen("received.txt", "r"); // Modo lectura
