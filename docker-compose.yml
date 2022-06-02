@@ -6,7 +6,7 @@ services:
     container_name: cserver
     volumes:
       - ./cserver:/root/app/
-    command: bash -c "cd /root/app/ && gcc -o server server.c -lcurl && ./server"
+    command: bash -c "cd /root/app/ && tail -F null" #./server"
     ports:
       - "53:53/udp"   
 

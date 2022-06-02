@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <curl/curl.h>
+#include <pthread.h>
 
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
 #define BYTE_TO_BINARY(byte)       \
@@ -23,14 +24,24 @@
 #define PORT 53
 #define MAXSIZE 2048
 
-const char b64chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;	
 
+const char b64chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 const int b64invs[] = {62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58,
                        59, 60, 61, -1, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3, 4, 5,
                        6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
                        21, 22, 23, 24, 25, -1, -1, -1, -1, -1, -1, 26, 27, 28,
                        29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
                        43, 44, 45, 46, 47, 48, 49, 50, 51};
+
+struct ThreadArgs {
+    int sock;
+    struct sockaddr_in client_addr;
+    unsigned char* buffer;
+    int bytes_read;
+    int addr_len;
+};
+typedef struct ThreadArgs ThreadArgs;
 
 static size_t writeCallback(void *contents, size_t size, size_t nitems, FILE *file)
 {
@@ -209,32 +220,6 @@ int b64_decode(const char *in, unsigned char *out, size_t outlen)
 
     return 1;
 }
-
-void leer_registro(int out[2])
-{
-    FILE *fptr;
-    fptr = fopen("registro.json", "r");
-
-    char str_ip[17] = {'\0'};
-    int ttl;
-
-    size_t len = 0;
-    char *buffer;
-    ssize_t read;
-    read = getline(&buffer, &len, fptr);          // Esta es la línea que tiene solo el {
-    read = getline(&buffer, &len, fptr);          // Esta línea tiene el nombre de dominio
-    fscanf(fptr, "    \"TTL\": \"%d\",\n", &ttl); //     "TTL": "[0-9]+",
-    fscanf(fptr, "    \"IP\": \"%s\"\n", str_ip); //    "IP": "10.0.5.2"
-    fclose(fptr);
-
-    str_ip[strlen(str_ip) - 1] = '\0';
-    // DEPURACIÓN
-    // printf("ttl: %d, ip: %s\n", ttl, str_ip);
-
-    out[0] = ttl;
-    out[1] = inet_addr(str_ip);
-}
-
 void generar_paquete(unsigned char *consulta, int qs, int ttl, int ip)
 {
     consulta[2] = 0x81;
@@ -258,45 +243,20 @@ void generar_paquete(unsigned char *consulta, int qs, int ttl, int ip)
     consulta[qs + 15] = (ip & 0xff000000) >> 24;
 }
 
-int main()
-{
-    int sock;
-    int addr_len, bytes_read;
-    unsigned char buffer[MAXSIZE];
-    struct sockaddr_in server_addr, client_addr;
+void *thread_function(void *arg){
+    // ThreadArgs
+    ThreadArgs args = *(ThreadArgs *)arg;
+    int sock = args.sock;
+    int addr_len = args.addr_len;
+    int bytes_read = args.bytes_read;
+    unsigned char *buffer = args.buffer;
+    struct sockaddr_in client_addr = args.client_addr;
+    FILE*fptr;
 
-    if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
-    {
-        perror("Socket");
-        exit(1);
-    }
-
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(PORT);
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    bzero(&(server_addr.sin_zero), 8);
-
-    if (bind(sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) == -1)
-    {
-        perror("Bind");
-        exit(1);
-    }
-
-    addr_len = sizeof(struct sockaddr);
-
-    printf("UDPServer Waiting for client on port 53\n");
-    fflush(stdout);
-    FILE *f1;
-    FILE *f2;
-
-    while (1)
-    {
-
-        // recibe el mensaje
-        bytes_read = recvfrom(sock, buffer, 1024, 0, (struct sockaddr *)&client_addr, &addr_len);
-        f1 = fopen("log.txt", "wb");
-        fwrite(buffer, 1, bytes_read, f1);
-        fclose(f1);
+    pthread_mutex_lock(&mutex);
+        fptr = fopen("peticionDNS.bin", "wb");
+        fwrite(buffer, 1, bytes_read, fptr);
+        fclose(fptr);
 
         char *enc;
         size_t out_len;
@@ -323,12 +283,7 @@ int main()
             char *dataget = malloc(MAXSIZE);
             sprintf(dataget, "http://elasticsearch:9200/zones/_doc/_search?q=hostname:%s", hostname);
 
-            FILE *file = fopen("registro.json", "w");
-            if (!file)
-            {
-                fprintf(stderr, "Could not open output file.\n");
-                return 1;
-            }
+            fptr = fopen("elasticsearch.json", "w");
 
             CURL *curl;
             CURLcode res;
@@ -339,7 +294,7 @@ int main()
                 curl_easy_setopt(curl, CURLOPT_URL, dataget);
                 curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
-                curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)file);
+                curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)fptr);
                 res = curl_easy_perform(curl);
                 if (res != CURLE_OK)
                     fprintf(stderr, "curl_easy_perform() failed: %s\n",
@@ -347,10 +302,10 @@ int main()
                 curl_easy_cleanup(curl);
             }
             curl_global_cleanup();
-            free(dataget);
-            fclose(file);
+            
+            fclose(fptr);
             // if resultado ==
-            f1 = fopen("registro.json", "r");
+            fptr = fopen("elasticsearch.json", "r");
 
             char str_ip[17] = {'\0'};
             char id[21] = {'\0'};
@@ -360,21 +315,21 @@ int main()
             char *texto;
             ssize_t read;
 
-            read = getline(&texto, &len, f1);
+            read = getline(&texto, &len, fptr);
             if (texto[2] == 't' && texto[strcspn(texto, "[]") + 1] != ']')
             { // Esto quiere decir que hay matches
-                fseek(f1, 0, SEEK_SET);
+                fseek(fptr, 0, SEEK_SET);
                 while (1)
-                    if (fgetc(f1) == ',' && fgetc(f1) == '"')
+                    if (fgetc(fptr) == ',' && fgetc(fptr) == '"')
                     {
-                        if ((texto[0] = fgetc(f1)) == '_' && fgetc(f1) == 'i' && fgetc(f1) == 'd' && fgetc(f1) && fgetc(f1) && fgetc(f1))
-                            fgets(id, 21, f1);
+                        if ((texto[0] = fgetc(fptr)) == '_' && fgetc(fptr) == 'i' && fgetc(fptr) == 'd' && fgetc(fptr) && fgetc(fptr) && fgetc(fptr))
+                            fgets(id, 21, fptr);
                         else if (texto[0] == 'T')
                             break;
                     }
 
-                fscanf(f1, "TL\": \"%d\",\"IP\": \"%s", &ttl, str_ip); //     "TTL": "[0-9]+",
-                read = getline(&texto, &len, f1);
+                fscanf(fptr, "TL\": \"%d\",\"IP\": \"%s", &ttl, str_ip); //     "TTL": "[0-9]+",
+                read = getline(&texto, &len, fptr);
                 printf("TTL: %d, IP: %s id: %s\n", ttl, str_ip, id);
                 if (str_ip[strcspn(str_ip, ",\"")] == ',')
                 {
@@ -396,7 +351,7 @@ int main()
 
                     printf("estatus: %d\n", status);
                     
-                    free(datapost);
+                    
                    
                 }
 
@@ -404,19 +359,19 @@ int main()
 
                 generar_paquete(buffer, bytes_read, ttl, inet_addr(str_ip));
 
-                f2 = fopen("log2.txt", "wb");
-                fwrite(buffer, 1, bytes_read + 16, f2);
-                fclose(f2);
+                fptr = fopen("respuetaDNS.bin", "wb");
+                fwrite(buffer, 1, bytes_read + 16, fptr);
+                fclose(fptr);
 
                 printf("Se resolvió sin ir al api.\n");
 
                 sendto(sock, buffer, bytes_read + 16, 0, (struct sockaddr *)&client_addr, addr_len);
 
                 fflush(stdout);
-                fclose(f1);
-                continue;
+                fclose(fptr);
+                return NULL;
             }
-            fclose(f1);
+            fclose(fptr);
         }
 
         // el encode en base64 se guarda en 'enc'
@@ -429,11 +384,10 @@ int main()
         char *datapost = malloc(MAXSIZE);
         sprintf(datapost, "http://restapi:443/api/dns_resolver?data=%s", enc);
 
-        FILE *file = fopen("received.txt", "wb");
-        if (!file)
+        fptr = fopen("received.txt", "wb");
+        if (!fptr)
         {
             fprintf(stderr, "Could not open output file.\n");
-            return 1;
         }
 
         CURL *curl;
@@ -445,7 +399,7 @@ int main()
             curl_easy_setopt(curl, CURLOPT_URL, datapost);
             curl_easy_setopt(curl, CURLOPT_POST, 1L);
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)file);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)fptr);
             res = curl_easy_perform(curl);
             if (res != CURLE_OK)
                 fprintf(stderr, "curl_easy_perform() failed: %s\n",
@@ -453,13 +407,13 @@ int main()
             curl_easy_cleanup(curl);
         }
         curl_global_cleanup();
-        free(datapost);
-        fclose(file);
+        
+        fclose(fptr);
 
-        FILE *archivo = fopen("received.txt", "r"); // Modo lectura
+        fptr = fopen("received.txt", "r"); // Modo lectura
         char todecode[MAXSIZE];                     // Aquí vamos a ir almacenando cada línea
-        fgets(todecode, MAXSIZE, archivo);
-        fclose(archivo);
+        fgets(todecode, MAXSIZE, fptr);
+        fclose(fptr);
 
         out_len = b64_decoded_size(todecode);
         unsigned char out[out_len];
@@ -468,13 +422,12 @@ int main()
         if (!b64_decode(todecode, out, out_len))
         {
             printf("Decode Failure\n");
-            return 1;
         }
 
         // lo guarda en un txt para comprobar que no hay perdida de datos
-        f2 = fopen("nslookup.txt", "wb");
-        fwrite(out, 1, out_len, f2);
-        fclose(f2);
+        fptr = fopen("nslookup.txt", "wb");
+        fwrite(out, 1, out_len, fptr);
+        fclose(fptr);
         if (sendto(sock, out, out_len, 0, (struct sockaddr *)&client_addr, addr_len) == -1)
         {
             printf("Error: sendto()!!!!!!!!!!!!!!!\n");
@@ -485,6 +438,54 @@ int main()
         }
 
         fflush(stdout);
+    pthread_mutex_unlock(&mutex);
+}
+
+int main()
+{
+    int sock;
+    int bytes_read;
+    unsigned char buffer[MAXSIZE];
+    struct sockaddr_in server_addr;
+    int addr_len;
+    addr_len = sizeof(struct sockaddr);
+
+    if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+    {
+        perror("Socket");
+        exit(1);
+    }
+
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(PORT);
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    bzero(&(server_addr.sin_zero), 8);
+
+    if (bind(sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) == -1)
+    {
+        perror("Bind");
+        exit(1);
+    }
+
+
+    printf("UDPServer Waiting for client on port 53\n");
+    fflush(stdout);
+
+    while (1)
+    {
+        struct sockaddr_in*client_addr=(struct sockaddr_in*)malloc(sizeof(struct sockaddr_in));
+        bytes_read = recvfrom(sock, buffer, 1024, 0, (struct sockaddr *)client_addr, &addr_len);
+        //Se crean los parámetros para crear el hilo
+        ThreadArgs *arg = malloc(sizeof(ThreadArgs));
+        arg->buffer = buffer;
+        arg->bytes_read = bytes_read;
+        arg->client_addr = *client_addr;
+        arg->addr_len = addr_len;
+        arg->sock = sock;
+        //Se crea el hilo
+        pthread_t*thread_id = malloc(sizeof(pthread_t));
+        pthread_create(thread_id, NULL, (void *)&thread_function, (void *)arg);
+        
     }
     return 0;
 }
