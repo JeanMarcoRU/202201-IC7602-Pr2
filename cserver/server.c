@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <curl/curl.h>
 #include <pthread.h>
+#include <ctype.h>
 
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
 #define BYTE_TO_BINARY(byte)       \
@@ -328,38 +329,38 @@ void *thread_function(void *arg){
                             break;
                     }
 
-                fscanf(fptr, "TL\": \"%d\",\"IP\": \"%s", &ttl, str_ip); //     "TTL": "[0-9]+",
+                fscanf(fptr, "TL\": \"%d\",\"IP\":", &ttl); //     "TTL": "[0-9]+",
+                texto[0] = fgetc(fptr);
+                if (texto[0] == ' ')
+                    fscanf(fptr, "\"%s\"", str_ip);
+                else //texto[0] debería ser una comilla
+                    fscanf(fptr, "%s\"", str_ip);
                 read = getline(&texto, &len, fptr);
                 printf("TTL: %d, IP: %s id: %s\n", ttl, str_ip, id);
                 if (str_ip[strcspn(str_ip, ",\"")] == ',')
                 {
-                    char otrosIPs[300];
+                    char otrosIPs[300] = {'\0'};
                     for (int z = 0; z < strlen(texto) - 6; z++)
                         otrosIPs[z] = texto[z + 1];
                     short s = strcspn(otrosIPs, "\"");
                     otrosIPs[s++] = ',';
                     otrosIPs[s++] = ' ';
-                    for (int z = 0; z < strlen(str_ip) - 1; z++)
+                    for (int z = 0; z < strcspn(str_ip, ",") && (isdigit(str_ip[z]) || str_ip[z] == '.') ; z++)
                         otrosIPs[s + z] = str_ip[z];
                     printf("Para actualizar la base: %s\n", otrosIPs);
-
                     // hacer update en elasticsearch
                     char *datapost = malloc(MAXSIZE);
-                    sprintf(datapost, "curl -X POST \"elasticsearch:9200/zones/_doc/%s/_update?pretty\" -H 'Content-Type: application/json' -d '{\"doc\": {\"IP\": \"%s\"}}'", id, otrosIPs);
+                    sprintf(datapost, "curl -X POST \"elasticsearch:9200/zones/_doc/%s/_update?pretty\" -H 'Content-Type: application/json' -d '{\"doc\": {\"IP\": \"%s\"}}' >> elasticsearch.json", id, otrosIPs);
 
                     int status = system(datapost);
-
-                    printf("estatus: %d\n", status);
-                    
-                    
-                   
+                    printf("curl status: %d\n", status);
                 }
 
                 str_ip[strcspn(str_ip, ",\"")] = '\0';
 
                 generar_paquete(buffer, bytes_read, ttl, inet_addr(str_ip));
 
-                fptr = fopen("respuetaDNS.bin", "wb");
+                fptr = fopen("respuestaDNS.bin", "wb");
                 fwrite(buffer, 1, bytes_read + 16, fptr);
                 fclose(fptr);
 
@@ -383,7 +384,7 @@ void *thread_function(void *arg){
         char *datapost = malloc(MAXSIZE);
         sprintf(datapost, "http://restapi:443/api/dns_resolver?data=%s", enc);
 
-        fptr = fopen("received.txt", "wb");
+        fptr = fopen("to_decode.txt", "wb");
         if (!fptr)
         {
             fprintf(stderr, "Could not open output file.\n");
@@ -408,7 +409,7 @@ void *thread_function(void *arg){
         curl_global_cleanup();        
         fclose(fptr);
 
-        fptr = fopen("received.txt", "r"); // Modo lectura
+        fptr = fopen("to_decode.txt", "r"); // Modo lectura
         char todecode[MAXSIZE];                     // Aquí vamos a ir almacenando cada línea
         fgets(todecode, MAXSIZE, fptr);
         fclose(fptr);
@@ -423,7 +424,7 @@ void *thread_function(void *arg){
         }
 
         // lo guarda en un txt para comprobar que no hay perdida de datos
-        fptr = fopen("nslookup.txt", "wb");
+        fptr = fopen("respuestaDNS.bin", "wb");
         fwrite(out, 1, out_len, fptr);
         fclose(fptr);
         if (sendto(sock, out, out_len, 0, (struct sockaddr *)&client_addr, addr_len) == -1)
