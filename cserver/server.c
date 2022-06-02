@@ -368,7 +368,6 @@ void *thread_function(void *arg){
                 sendto(sock, buffer, bytes_read + 16, 0, (struct sockaddr *)&client_addr, addr_len);
 
                 fflush(stdout);
-                fclose(fptr);
                 return NULL;
             }
             fclose(fptr);
@@ -473,13 +472,13 @@ int main()
 
     while (1)
     {
-        struct sockaddr_in*client_addr=(struct sockaddr_in*)malloc(sizeof(struct sockaddr_in));
-        bytes_read = recvfrom(sock, buffer, 1024, 0, (struct sockaddr *)client_addr, &addr_len);
+        struct sockaddr_in client_addr=*(struct sockaddr_in*)malloc(sizeof(struct sockaddr_in));
+        bytes_read = recvfrom(sock, buffer, 1024, 0, (struct sockaddr *)&client_addr, &addr_len);
         //Se crean los parámetros para crear el hilo
         ThreadArgs *arg = malloc(sizeof(ThreadArgs));
         arg->buffer = buffer;
         arg->bytes_read = bytes_read;
-        arg->client_addr = *client_addr;
+        arg->client_addr = client_addr;
         arg->addr_len = addr_len;
         arg->sock = sock;
         //Se crea el hilo
