@@ -352,7 +352,7 @@ void *thread_function(void *arg)
                 printf("Para actualizar la base: %s\n", otrosIPs);
                 // hacer update en elasticsearch
                 char *datapost = malloc(MAXSIZE);
-                sprintf(datapost, "curl -X POST \"elasticsearch:9200/zones/_doc/%s/_update?pretty\" -H 'Content-Type: application/json' -d '{\"doc\": {\"IP\": \"%s\"}}' >> elasticsearch.json", id, otrosIPs);
+                sprintf(datapost, "curl -X POST \"elasticsearch:9200/zones/_doc/%s/_update?pretty\" -H 'Content-Type: application/json' -d '{\"doc\": {\"IP\": \"%s\"}}'", id, otrosIPs);
 
                 int status = system(datapost);
                 printf("curl status: %d\n", status);
@@ -478,7 +478,7 @@ int main()
         bytes_read = recvfrom(sock, buffer, 1024, 0, (struct sockaddr *)&client_addr, &addr_len);
         // Se crean los parámetros para crear el hilo
         ThreadArgs *arg = malloc(sizeof(ThreadArgs));
-        arg->buffer = malloc(bytes_read);
+        arg->buffer = calloc(MAXSIZE,bytes_read);
         for (int i = 0; i < bytes_read; i++)
         {
             arg->buffer[i] = buffer[i];
@@ -490,7 +490,7 @@ int main()
         arg->sock = sock;
         // Se crea el hilo
         pthread_t *thread_id = malloc(sizeof(pthread_t));
-        pthread_create(thread_id, NULL, (void *)&thread_function, (void *)arg);
+        pthread_create(thread_id, NULL, (void *)&thread_function, (void *)arg);  // Se crea el hilo     
     }
     return 0;
 }
