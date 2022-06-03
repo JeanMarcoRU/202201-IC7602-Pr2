@@ -125,14 +125,16 @@ Y ya estaría listo.
 12. No utilizar usuario y contraseña al utilizar kibana y elasticsearch ya que se podrían presentar muchos errores.
 
 ## Conclusiones
-1. Se logró implementar un interceptor de paquetes DNS con sobre-escritura y round-robin de IPs.
-2. Se implementó un servidor UDP en C que recibe, interpreta, redirige y procesa solicitudes DNS
+1. Se logró implementar completamente el proyecto que consiste en un resolvedor de paquetes DNS con sobre-escritura y round-robin de IPs.
+2. Se implementó un servidor UDP en C que recibe, interpreta, traduce a BASE64, redirige y resuelve solicitudes DNS, además con la capacidad de atender a múltiples solicitudes de manera simultánea.
 3. Se implementó correctamente una API REST (servidor TCP) para la resolución de peticiones DNS codificadas por medio de BASE64.
 4. Se implementó correctamente una base de datos elasticsearch para la sobre-escritura de IPs para los nombres de dominio.
 5. Se implementó correctamente un sistema para la utilización de todos los IPs guardados en la base para un dominio particular por medio del método conocido como round-robin.
 6. Se logró interpretar, leer, modificar y actualizar paquetes DNS.
 7. Se interactuó con especificación formal de redes.
-8. Se logró automatizar la implementación de los componentes de nuestra solución por medio de Docker-Compose.
-9. Aprendimos mucho de DNS.
-10. Aprendimos mucho de programar en C.
+8. Se logró automatizar la ejecución de los componentes de nuestra solución por medio de Docker-Compose.
+9. Aprendimos mucho de programar en C.
+10. Aprendimos mucho de DNS.
+11. Aprendimos a instalar y configurar elasticsearch y kibana.
+12. Aprendimos a levantar una sencilla api rest en python con flask.
 ## Referencias Bibliográficas

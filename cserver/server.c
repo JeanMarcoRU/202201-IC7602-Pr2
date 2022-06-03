@@ -11,17 +11,6 @@
 #include <pthread.h>
 #include <ctype.h>
 
-#define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
-#define BYTE_TO_BINARY(byte)       \
-    (byte & 0x80 ? '1' : '0'),     \
-        (byte & 0x40 ? '1' : '0'), \
-        (byte & 0x20 ? '1' : '0'), \
-        (byte & 0x10 ? '1' : '0'), \
-        (byte & 0x08 ? '1' : '0'), \
-        (byte & 0x04 ? '1' : '0'), \
-        (byte & 0x02 ? '1' : '0'), \
-        (byte & 0x01 ? '1' : '0')
-
 #define PORT 53
 #define MAXSIZE 5048
 
@@ -478,19 +467,16 @@ int main()
         bytes_read = recvfrom(sock, buffer, 1024, 0, (struct sockaddr *)&client_addr, &addr_len);
         // Se crean los parámetros para crear el hilo
         ThreadArgs *arg = malloc(sizeof(ThreadArgs));
-        arg->buffer = calloc(MAXSIZE,bytes_read);
+        arg->buffer = calloc(MAXSIZE, bytes_read);
         for (int i = 0; i < bytes_read; i++)
-        {
-            arg->buffer[i] = buffer[i];
-        }
-        
+            arg->buffer[i] = buffer[i];    
         arg->bytes_read = bytes_read;
         arg->client_addr = client_addr;
         arg->addr_len = addr_len;
         arg->sock = sock;
-        // Se crea el hilo
+        // Se crea el hilo dentro del ciclo while
         pthread_t *thread_id = malloc(sizeof(pthread_t));
-        pthread_create(thread_id, NULL, (void *)&thread_function, (void *)arg);  // Se crea el hilo     
+        pthread_create(thread_id, NULL, (void *)&thread_function, (void *)arg);
     }
     return 0;
 }
