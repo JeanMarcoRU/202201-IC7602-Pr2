@@ -64,10 +64,17 @@ Ahora si eliminamos ese documento y volvemos a hacer la peticion, como ya no ten
 
 ![image](https://user-images.githubusercontent.com/15478613/171778536-0e100713-c4b2-443c-8bc3-b9149c73d413.png)
 
+Tambien podemos consultar con el nombre de dominio que queramos, aqui algunos ejemplos:
+
+![image](https://user-images.githubusercontent.com/15478613/171779021-103b7389-931c-4d49-b49c-a951e182dc06.png)
+
+Tambien podemos cambiar el dns externo que usa la api de python para sus consultas, modificando el archivo <./restapi/config.txt>, algunos populares son los de google, <8.8.8.8> o <1.1.1.1>, pero podemos usar cualquier otro.
+
+![image](https://user-images.githubusercontent.com/15478613/171779358-9dade826-dbe8-417c-b9b3-0e2ff7b5e72c.png)
 
 
 
-3. RoundRobin, Kibana
+
 4. Verificación de interpretación y construcción de paquetes DNS
 5. nslookup consulta al api
 6. Prueba final, modificar resolv.conf
