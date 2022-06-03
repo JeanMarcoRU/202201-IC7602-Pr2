@@ -138,3 +138,5 @@ Y ya estaría listo.
 11. Aprendimos a instalar y configurar elasticsearch y kibana.
 12. Aprendimos a levantar una sencilla api rest en python con flask.
 ## Referencias Bibliográficas
+Apellido, N (fecha). *Titulo de la referencia* Recuperado el día X, de https://link
+Open Computers Systems Fundamentals. (2020, 1 enero). *4.6. UDP Socket Programming: DNS* Recuperado 3 de junio de 2022, de https://w3.cs.jmu.edu/kirkpams/OpenCSF/Books/csf/html/UDPSockets.html
