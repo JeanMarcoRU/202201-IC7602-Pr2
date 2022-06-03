@@ -116,6 +116,8 @@ Y ya estaría listo.
 10. Investigar cómo armar paquetes de RFC2929.
 11. Recomendamos leer cómo hacer las consultas REST a la api de elasticsearch (insertar, eliminar, obtener y modificar datos), utilizando curl desde la terminal en lugar de Kibana.
 
+12. No utilizar usuario y contraseña al utilizar kibana y elasticsearch ya que se podrían presentar muchos errores.
+
 ## Conclusiones
 
 ## Referencias Bibliográficas
