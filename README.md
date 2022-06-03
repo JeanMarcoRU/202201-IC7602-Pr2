@@ -60,7 +60,8 @@ En la captura anterior podemos ver que www.google.com tiene 3 ips, por lo que co
 
 ![image](https://user-images.githubusercontent.com/15478613/171778125-7b54132d-2244-4943-abfd-417158f608e7.png)
 
-Ahora si eliminamos ese documento y volvemos a hacer la peticion, como ya no tenemos www.google.com en nuestra base de datos, la enviara a la api de python mediante http, el cual devolvera el ip real de www.google.com
+Ahora si eliminamos ese documento y volvemos a hacer la peticion, como ya no tenemos www.google.com en nuestra base de datos, la enviara a la api de python mediante http, el cual devolvera el ip real de www.google.com como vemos a continuacion:
+
 ![image](https://user-images.githubusercontent.com/15478613/171778536-0e100713-c4b2-443c-8bc3-b9149c73d413.png)
 
 
