@@ -19,16 +19,21 @@ docker logs cserver
 ```
 En este proyecto se crean archivos binarios para validar la no pérdida de paquetes, los cuales con la aplicación hexyl se imprimen de manera muy bonita, por lo que se puede ejecutar el siguiente comando para ver el último paquete que arribó al DNS interceptor.
 ```
-hexyl cserver/log.txt
+hexyl cserver/peticionDNS.bin
 ```
-Para comprobar dicho archivo en binario, se ejecuta
+Para comprobar dicho archivo en binario se puede ejecutar
 ```
-xxd -b cserver/log2.txt
+xxd -b cserver/peticionDNS.bin
+```
+De igual forma para corroborar el paquete DNS de respuesta se puede hacer de la siguiente forma:
+```
+hexyl cserver/respuestaDNS.bin
+xxd -b cserver/respuestaDNS.bin
 ```
 
 ## Para el Api REST
 
-Comandos Utiles:
+Comandos Útiles:
 
 ```
 sudo pip3 install virtualenv
