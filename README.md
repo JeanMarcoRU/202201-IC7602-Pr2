@@ -82,6 +82,10 @@ Luedo modificamos el archivo, cambiando donde dice nameserver, por nuestro dns, 
 
 ![image](https://user-images.githubusercontent.com/15478613/171779956-81066bb5-a149-47de-a005-313b81726dce.png)
 
+Y una vez hecho eso podemos navegar libremente por internet usando nuestro dns y en la terminal donde levantamos en docker-compose podremos ver como se resulven todas las peticiones.
+
+![image](https://user-images.githubusercontent.com/15478613/171780259-c68dd941-4708-4a8c-bc69-6c36c027b365.png)
+
 
 ## Recomendaciones
 
