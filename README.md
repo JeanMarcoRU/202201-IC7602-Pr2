@@ -50,3 +50,8 @@ curl -X POST "localhost:9200/zones/_doc/<id>/_update?pretty" -H 'Content-Type: a
 
 ## Pruebas
 
+1. nslookup www.google.com
+2. RoundRobin, Kibana
+3. Verificación de interpretación y construcción de paquetes DNS
+4. nslookup consulta al api
+5. Prueba final, modificar resolv.conf
