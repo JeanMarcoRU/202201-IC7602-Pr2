@@ -26,44 +26,7 @@ Para comprobar dicho archivo en binario, se ejecuta
 xxd -b cserver/log2.txt
 ```
 
-## Para el Api REST
-
-Comandos Utiles:
-
-```
-sudo pip3 install virtualenv
-source venv/bin/activate
-deactivate
-pip install -r requirements.txt
-```
-
-Levantar el contenedor en docker:
-
-```
-sudo docker-compose build
-sudo docker-compose up -d
-```
-
-Para probar la API:
-
-Para pasar un mensaje a base64:
-
-```
-http://127.0.0.1:3000/encode?msj=mensaje a encriptar
-```
-
-Para pasar de base64 a texto:
-
-```
-http://127.0.0.1:3000/decode?msj=amVhbiBtYXJjbyByb2phcw==
-```
-
-Podemos usar curl
-```
-curl -X POST http://127.0.0.1:443/encode/api/dns_resolver?msj=mensaje
-curl -X POST http://127.0.0.1:443/decode/api/dns_resolver?msj=bWVuc2FqZQ==
-```
-## Para Elasticsearch & Kibana
+## Elasticsearch & Kibana
 
 Insertar datos:
 ```
@@ -80,7 +43,7 @@ Obtener datos:
 curl -X GET http://0.0.0.0:9200/zones/_doc/_search?q=hostname:www.google.com
 ```
 
-Modificar datos:
+Modificar datos (No es necesario pasar el doc entero, puede ser solo la llave-valor que se quiere modificar):
 ```
 curl -X POST "localhost:9200/zones/_doc/<id>/_update?pretty" -H 'Content-Type: application/json' -d '{"doc": { "hostname": "www.google.com", "TTL": "5", "IP": "10.0.0.0"}}'
 ```
