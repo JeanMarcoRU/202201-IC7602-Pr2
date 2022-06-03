@@ -50,9 +50,11 @@ curl -X POST "localhost:9200/zones/_doc/<id>/_update?pretty" -H 'Content-Type: a
 
 ## Pruebas
 
-1. Si ponemos en nslookup server 0.0.0.0, podremos usar nuestro dns interceptor pera empezar a crear las pruebas.
+Si ponemos en nslookup server 0.0.0.0, podremos usar nuestro dns interceptor pera empezar a crear las pruebas.
 ![image](https://user-images.githubusercontent.com/15478613/171777588-bb6fa653-6788-4197-8689-b1577c5d73aa.png)
 
+Sientramos a http://0.0.0.0:5601/ ahi podremos ver la base de datos de elasticsearch, con Kibana, donde podemos ver los documentos que hemos creado en el indice "zones".
+![image](https://user-images.githubusercontent.com/15478613/171777775-c3dec8b2-482e-47ab-921f-e46e2745e473.png)
 
 
 3. RoundRobin, Kibana
