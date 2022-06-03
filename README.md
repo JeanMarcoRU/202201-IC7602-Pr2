@@ -72,12 +72,11 @@ Tambien podemos cambiar el dns externo que usa la api de python para sus consult
 
 ![image](https://user-images.githubusercontent.com/15478613/171779358-9dade826-dbe8-417c-b9b3-0e2ff7b5e72c.png)
 
-
-
-
-4. Verificación de interpretación y construcción de paquetes DNS
-5. nslookup consulta al api
-6. Prueba final, modificar resolv.conf
+Ahora despues de todas estas pruebas, podemos hacer la prueba final y definitiva, modificar resolv.conf de nuestro sistema operativo Linux:
+Primero para modificarlo escribimos en la terminal:
+```
+sudo nano /etc/resolv.conf
+```
 
 ## Recomendaciones
 
