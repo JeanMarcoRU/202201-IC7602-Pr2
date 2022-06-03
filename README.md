@@ -50,11 +50,15 @@ curl -X POST "localhost:9200/zones/_doc/<id>/_update?pretty" -H 'Content-Type: a
 
 ## Pruebas
 
-1. nslookup www.google.com
-2. RoundRobin, Kibana
-3. Verificación de interpretación y construcción de paquetes DNS
-4. nslookup consulta al api
-5. Prueba final, modificar resolv.conf
+1. Si ponemos en nslookup server 0.0.0.0, podremos usar nuestro dns interceptor pera empezar a crear las pruebas.
+![image](https://user-images.githubusercontent.com/15478613/171777588-bb6fa653-6788-4197-8689-b1577c5d73aa.png)
+
+
+
+3. RoundRobin, Kibana
+4. Verificación de interpretación y construcción de paquetes DNS
+5. nslookup consulta al api
+6. Prueba final, modificar resolv.conf
 
 ## Recomendaciones
 
