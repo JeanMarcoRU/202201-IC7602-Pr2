@@ -50,3 +50,45 @@ curl -X POST "localhost:9200/zones/_doc/<id>/_update?pretty" -H 'Content-Type: a
 
 ## Pruebas
 
+Si ponemos en nslookup server 0.0.0.0, podremos usar nuestro dns interceptor pera empezar a crear las pruebas.
+![image](https://user-images.githubusercontent.com/15478613/171777588-bb6fa653-6788-4197-8689-b1577c5d73aa.png)
+
+Sientramos a http://0.0.0.0:5601/ ahi podremos ver la base de datos de elasticsearch, con Kibana, donde podemos ver los documentos que hemos creado en el indice "zones".
+![image](https://user-images.githubusercontent.com/15478613/171777775-c3dec8b2-482e-47ab-921f-e46e2745e473.png)
+
+En la captura anterior podemos ver que www.google.com tiene 3 ips, por lo que con nslookup podemos consultar esa direccion y nos devolvera un ip diferente haciendo un RoundRobin sobre los mismos.
+
+![image](https://user-images.githubusercontent.com/15478613/171778125-7b54132d-2244-4943-abfd-417158f608e7.png)
+
+Ahora si eliminamos ese documento y volvemos a hacer la peticion, como ya no tenemos www.google.com en nuestra base de datos, la enviara a la api de python mediante http, el cual devolvera el ip real de www.google.com como vemos a continuacion:
+
+![image](https://user-images.githubusercontent.com/15478613/171778536-0e100713-c4b2-443c-8bc3-b9149c73d413.png)
+
+Tambien podemos consultar con el nombre de dominio que queramos, aqui algunos ejemplos:
+
+![image](https://user-images.githubusercontent.com/15478613/171779021-103b7389-931c-4d49-b49c-a951e182dc06.png)
+
+Tambien podemos cambiar el dns externo que usa la api de python para sus consultas, modificando el archivo <./restapi/config.txt>, algunos populares son los de google, <8.8.8.8> o <1.1.1.1>, pero podemos usar cualquier otro.
+
+![image](https://user-images.githubusercontent.com/15478613/171779358-9dade826-dbe8-417c-b9b3-0e2ff7b5e72c.png)
+
+Ahora despues de todas estas pruebas, podemos hacer la prueba final y definitiva, modificar resolv.conf de nuestro sistema operativo Linux:
+Primero para modificarlo escribimos en la terminal:
+```
+sudo nano /etc/resolv.conf
+```
+
+Luedo modificamos el archivo, cambiando donde dice nameserver, por nuestro dns, asi:
+
+![image](https://user-images.githubusercontent.com/15478613/171779956-81066bb5-a149-47de-a005-313b81726dce.png)
+
+Y una vez hecho eso podemos navegar libremente por internet usando nuestro dns y en la terminal donde levantamos en docker-compose podremos ver como se resulven todas las peticiones.
+
+![image](https://user-images.githubusercontent.com/15478613/171780259-c68dd941-4708-4a8c-bc69-6c36c027b365.png)
+
+
+## Recomendaciones
+
+## Conclusiones
+
+## Referencias Bibliográficas
