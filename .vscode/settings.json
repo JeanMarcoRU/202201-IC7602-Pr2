@@ -30,5 +30,10 @@
   "C_Cpp_Runner.useMsvc": false,
   "files.associations": {
     "socket.h": "c"
-  }
+  },
+  "cSpell.language": "en,es",
+  "cSpell.words": [
+    "cserver",
+    "peticion"
+  ]
 }
