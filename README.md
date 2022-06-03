@@ -56,6 +56,10 @@ Si ponemos en nslookup server 0.0.0.0, podremos usar nuestro dns interceptor per
 Sientramos a http://0.0.0.0:5601/ ahi podremos ver la base de datos de elasticsearch, con Kibana, donde podemos ver los documentos que hemos creado en el indice "zones".
 ![image](https://user-images.githubusercontent.com/15478613/171777775-c3dec8b2-482e-47ab-921f-e46e2745e473.png)
 
+En la captura anterior podemos ver que www.google.com tiene 3 ips, por lo que con nslookup podemos consultar esa direccion y nos devolvera un ip diferente haciendo un RoundRobin sobre los mismos.
+![image](https://user-images.githubusercontent.com/15478613/171778125-7b54132d-2244-4943-abfd-417158f608e7.png)
+
+
 
 3. RoundRobin, Kibana
 4. Verificación de interpretación y construcción de paquetes DNS
