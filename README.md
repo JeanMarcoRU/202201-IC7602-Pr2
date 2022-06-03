@@ -78,6 +78,11 @@ Primero para modificarlo escribimos en la terminal:
 sudo nano /etc/resolv.conf
 ```
 
+Luedo modificamos el archivo, cambiando donde dice nameserver, por nuestro dns, asi:
+
+![image](https://user-images.githubusercontent.com/15478613/171779956-81066bb5-a149-47de-a005-313b81726dce.png)
+
+
 ## Recomendaciones
 
 ## Conclusiones
