@@ -94,7 +94,27 @@ Y una vez hecho eso podemos navegar libremente por internet usando nuestro dns y
 4. Es necesario esperar a que Kibana cargue, puede tardar algunos minutos para levantar. Si se intenta utilizar apenas se hace up, la página no cargará o aparecerá un mensaje de que aún no está listo.
 5. Para observar los bytes de los archivos es mejor utilizar hexyl, los refleja de una manera comprensible y así no es necesario darles vuelta para encontrar la información necesaria.
 6. El paquete que se obtiene al principio, los bytes del mismo y demás procedimientos que se realizan se pueden guardar en archivos para comprobar que no hay pérdida de datos y que las respuestas obtenidas son las correctas.
-7. 
+7. Pasar por volumen la carpeta del api para poder modificar el resolv.conf en el momento de ejecución.
+8. En caso de que el puerto 53 no esté disponible, hay que ejecutar
+```
+sudo systemctl disable systemd-resolved
+sudo systemctl stop systemd-resolved
+sudo nano /etc/NetworkManager/NetworkManager.conf
+```
+En [main] se añade 
+```
+dns=default
+```
+Luego se ejecuta
+```
+rm /etc/resolv.conf
+sudo systemctl restart NetworkManager
+```
+Y ya estaría listo.
+
+9. Investigar sobre la biblioteca de curl en C para hacer un GET y POST, la diferencia entre estos, y guardar la respuesta en un archivo (consideramos que es más sencillo para leer después).
+10. Investigar cómo armar paquetes de RFC2929.
+11. Recomendamos leer cómo hacer las consultas REST a la api de elasticsearch (insertar, eliminar, obtener y modificar datos), utilizando curl desde la terminal en lugar de Kibana.
 
 ## Conclusiones
 
