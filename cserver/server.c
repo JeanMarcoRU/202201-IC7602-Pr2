@@ -300,7 +300,7 @@ void *thread_function(void *arg)
         fptr = fopen("elasticsearch.json", "r");
 
         char str_ip[17] = {'\0'};
-        char id[21] = {'\0'};
+        char id[MAXSIZE] = {'\0'};
         int ttl;
 
         size_t len = 0;
@@ -315,7 +315,15 @@ void *thread_function(void *arg)
                 if (fgetc(fptr) == ',' && fgetc(fptr) == '"')
                 {
                     if ((texto[0] = fgetc(fptr)) == '_' && fgetc(fptr) == 'i' && fgetc(fptr) == 'd' && fgetc(fptr) && fgetc(fptr) && fgetc(fptr))
-                        fgets(id, 21, fptr);
+                        //fgets(id, 21, fptr);
+                        //fscanf(fptr, "%s", id);
+                        for (int i = 0;; i++)
+                        {
+                            if ((texto[0] = fgetc(fptr)) == '"')
+                                break;
+                            id[i] = texto[0];
+                        }
+                        
                     else if (texto[0] == 'T')
                         break;
                 }
