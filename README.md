@@ -1,5 +1,7 @@
 #### Jean Marco Rojas - 2015040717, Esteban Cruz - 2018104794, María Madrigal - 2018186563
 
+![image](https://user-images.githubusercontent.com/15478613/171976689-0817e147-401f-4a6d-838c-31f74939a4c3.png)
+
 # Instrucciones de ejecución
 Copie y pegue en una terminal levantada en la raíz del proyecto el siguiente comando para construir y ejecutar el proyecto:
 ```
@@ -141,6 +143,7 @@ Y ya estaría listo.
 8. Se logró automatizar la ejecución de los componentes de nuestra solución por medio de Docker-Compose.
 9. Ampliamos nuestros conocimientos en el manejo de pthreads, puertos y manejo de bytes en C.
 10. Aprendimos mucho de DNS.
+<<<<<<< HEAD
 11. Aprendimos a instalar y configurar elasticsearch y kibana, asi como configurarlas sin un usuario y todas las consultas mediante curl.
 12. Aprendimos a levantar una sencilla api rest en python con flask.
 ## Referencias Bibliográficas
@@ -160,3 +163,14 @@ Y ya estaría listo.
 * Using Libcurl in C/C++ Application . (2020). Recuperado 1 Junio 2022, de https://dev.to/hi_artem/using-libcurl-in-c-c-application-4668
 
 Running the Elastic Stack ("ELK") on Docker. Recuperado 27 mayo de 2022, de https://www.elastic.co/guide/en/elastic-stack-get-started/current/get-started-stack-docker.html#run-docker-secure
+=======
+11. Aprendimos a instalar y configurar elasticsearch y kibana, asi como configurarlas sin un usuario y todas las consultas mediantes curl.
+12. Aprendimos a levantar una sencilla api rest en python con flask.
+## Referencias Bibliográficas
+Apellido, N (fecha). *Titulo de la referencia* Recuperado el día X, de https://link \
+Open Computers Systems Fundamentals. (2020, 1 enero). *4.6. UDP Socket Programming: DNS* Recuperado 3 de junio de 2022, de https://w3.cs.jmu.edu/kirkpams/OpenCSF/Books/csf/html/UDPSockets.html
+* Using Libcurl in C/C++ Application . (2020). Retrieved 1 June 2022, from https://dev.to/hi_artem/using-libcurl-in-c-c-application-4668
+* Creating RESTful Web APIs using Flask and Python. (2020). Retrieved 25 May 2022, from https://towardsdatascience.com/creating-restful-apis-using-flask-and-python-655bad51b24
+* Python File Open. (2022). Retrieved 23 May 2022, from https://www.w3schools.com/python/python_file_open.asp
+* Base64 Encode and Decode in C. (2017). Retrieved 20 May 2022, from https://nachtimwald.com/2017/11/18/base64-encode-and-decode-in-c/
+>>>>>>> 9f7a9ee6066842930da74306159366a90f9e56e5
