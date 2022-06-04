@@ -1,5 +1,7 @@
 #### Jean Marco Rojas - 2015040717, Esteban Cruz - 2018104794, María Madrigal - 2018186563
 
+![image](https://user-images.githubusercontent.com/15478613/171976689-0817e147-401f-4a6d-838c-31f74939a4c3.png)
+
 # Instrucciones de ejecución
 Copie y pegue en una terminal levantada en la raíz del proyecto el siguiente comando para construir y ejecutar el proyecto:
 ```
