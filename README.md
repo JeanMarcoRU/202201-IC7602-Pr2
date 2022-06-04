@@ -141,7 +141,7 @@ Y ya estaría listo.
 8. Se logró automatizar la ejecución de los componentes de nuestra solución por medio de Docker-Compose.
 9. Aprendimos mucho de programar en C.
 10. Aprendimos mucho de DNS.
-11. Aprendimos a instalar y configurar elasticsearch y kibana.
+11. Aprendimos a instalar y configurar elasticsearch y kibana, asi como configurarlas sin un usuario y todas las consultas mediantes curl.
 12. Aprendimos a levantar una sencilla api rest en python con flask.
 ## Referencias Bibliográficas
 Apellido, N (fecha). *Titulo de la referencia* Recuperado el día X, de https://link \
