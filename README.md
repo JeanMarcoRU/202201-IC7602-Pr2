@@ -61,9 +61,11 @@ curl -X POST "localhost:9200/zones/_doc/<id>/_update?pretty" -H 'Content-Type: a
 ## Pruebas
 
 Si ponemos en nslookup server 0.0.0.0, podremos usar nuestro dns interceptor pera empezar a crear las pruebas.
+
 ![image](https://user-images.githubusercontent.com/15478613/171777588-bb6fa653-6788-4197-8689-b1577c5d73aa.png)
 
 Si entramos a http://0.0.0.0:5601/ , podremos ver la base de datos de elasticsearch, con Kibana, donde podemos ver los documentos que hemos creado en el índice "zones".
+
 ![image](https://user-images.githubusercontent.com/15478613/171777775-c3dec8b2-482e-47ab-921f-e46e2745e473.png)
 
 En la captura anterior podemos ver que www.google.com tiene 3 ips, por lo que con nslookup podemos consultar esa dirección y nos devolverá un ip diferente haciendo un RoundRobin sobre los mismos.
@@ -71,6 +73,7 @@ En la captura anterior podemos ver que www.google.com tiene 3 ips, por lo que co
 ![image](https://user-images.githubusercontent.com/15478613/171778125-7b54132d-2244-4943-abfd-417158f608e7.png)
 
 También hicimos esta otra prueba con tres terminales al mismo tiempo para probar la concurrencia del RR en elasticsearch:
+
 ![image](https://user-images.githubusercontent.com/15478613/171974492-76ffd58c-d923-4f91-9967-b97c3944d287.png)\
 La imagen anterior es en especial interesante porque cada uno de los miembros del equipo estuvo controlando cada uno de los clientes nslookup, inclusive estuvimos haciendo múltiples solicitudes simultaneas y no se cayó nuestra solución.
 
@@ -143,34 +146,24 @@ Y ya estaría listo.
 8. Se logró automatizar la ejecución de los componentes de nuestra solución por medio de Docker-Compose.
 9. Ampliamos nuestros conocimientos en el manejo de pthreads, puertos y manejo de bytes en C.
 10. Aprendimos mucho de DNS.
-<<<<<<< HEAD
 11. Aprendimos a instalar y configurar elasticsearch y kibana, asi como configurarlas sin un usuario y todas las consultas mediante curl.
 12. Aprendimos a levantar una sencilla api rest en python con flask.
 ## Referencias Bibliográficas
 
 * Creating RESTful Web APIs using Flask and Python. (2020). Recuperado 25 Mayo 2022, de https://towardsdatascience.com/creating-restful-apis-using-flask-and-python-655bad51b24
 
-* Get API | Elasticsearch Guide [8.2] | Elastic. (2022). Recuperado 4 Junio 2022, de https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html
+* Get API. Elasticsearch Guide [8.2]. Elastic. (2022). Recuperado 3 Junio 2022, de https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html
 
-* Open Computers Systems Fundamentals. (2020, 1 enero). *4.6. UDP Socket Programming: DNS* Recuperado 3 de junio de 2022, de https://w3.cs.jmu.edu/kirkpams/OpenCSF/Books/csf/html/UDPSockets.html
+* Open Computers Systems Fundamentals. (2020, 1 enero). *4.6. UDP Socket Programming: DNS* Recuperado 27 de Mayo de 2022, de https://w3.cs.jmu.edu/kirkpams/OpenCSF/Books/csf/html/UDPSockets.html
 
 * Passing arguments to pthread function. (2022). Recuperado 1 Junio 2022, de http://www.cse.cuhk.edu.hk/~ericlo/teaching/os/lab/9-PThread/Pass.html
 
 * pranavgupta21. (2012, 28 enero). *multithreaded-UDP-client-server* Recuperado el 3 de junio de 2022, de https://github.com/pranavgupta21/multithreaded-UDP-client-server
 
-* Sanidhya(2020)*Install Elasticsearch and Kibana using Docker*. Recuperado 3 de junio de 2022, de https://medium.com/analytics-vidhya/setup-elasticsearch-kibana-via-docker-ce21cf6f5312
+* Sanidhya(2020)*Install Elasticsearch and Kibana using Docker*. Recuperado 24 Mayo 2022, de https://medium.com/analytics-vidhya/setup-elasticsearch-kibana-via-docker-ce21cf6f5312
+
+* selfTuts(2022). *Install Elasticsearch and Kibana using Docker compose. Elasticsearch. Kibana. Docker.* Recuperado 25 Mayo 2022, from https://www.youtube.com/watch?v=BYcXvhJTDpg
 
 * Using Libcurl in C/C++ Application . (2020). Recuperado 1 Junio 2022, de https://dev.to/hi_artem/using-libcurl-in-c-c-application-4668
 
-Running the Elastic Stack ("ELK") on Docker. Recuperado 27 mayo de 2022, de https://www.elastic.co/guide/en/elastic-stack-get-started/current/get-started-stack-docker.html#run-docker-secure
-=======
-11. Aprendimos a instalar y configurar elasticsearch y kibana, asi como configurarlas sin un usuario y todas las consultas mediantes curl.
-12. Aprendimos a levantar una sencilla api rest en python con flask.
-## Referencias Bibliográficas
-Apellido, N (fecha). *Titulo de la referencia* Recuperado el día X, de https://link \
-Open Computers Systems Fundamentals. (2020, 1 enero). *4.6. UDP Socket Programming: DNS* Recuperado 3 de junio de 2022, de https://w3.cs.jmu.edu/kirkpams/OpenCSF/Books/csf/html/UDPSockets.html
-* Using Libcurl in C/C++ Application . (2020). Retrieved 1 June 2022, from https://dev.to/hi_artem/using-libcurl-in-c-c-application-4668
-* Creating RESTful Web APIs using Flask and Python. (2020). Retrieved 25 May 2022, from https://towardsdatascience.com/creating-restful-apis-using-flask-and-python-655bad51b24
-* Python File Open. (2022). Retrieved 23 May 2022, from https://www.w3schools.com/python/python_file_open.asp
-* Base64 Encode and Decode in C. (2017). Retrieved 20 May 2022, from https://nachtimwald.com/2017/11/18/base64-encode-and-decode-in-c/
->>>>>>> 9f7a9ee6066842930da74306159366a90f9e56e5
+* Running the Elastic Stack ("ELK") on Docker. Recuperado 27 mayo de 2022, de https://www.elastic.co/guide/en/elastic-stack-get-started/current/get-started-stack-docker.html#run-docker-secure
