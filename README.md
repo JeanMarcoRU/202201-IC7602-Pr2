@@ -36,6 +36,8 @@ xxd -b cserver/respuestaDNS.bin
 ### Comandos Útiles:
 Insertar datos:
 ```
+curl -X PUT "http://localhost:9200/zones/_doc/<hostname>/?pretty" -H 'Content-Type: application/json' -d '{"hostname": "www.detele.com","TTL": "5","IP": "10.0.5.2"}'
+
 curl -X POST "http://localhost:9200/zones/_doc/?pretty" -H 'Content-Type: application/json' -d '{"hostname": "www.google.com","TTL": "5","IP": "10.0.5.2"}'
 ```
 
