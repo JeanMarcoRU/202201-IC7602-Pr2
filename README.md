@@ -146,3 +146,4 @@ Y ya estaría listo.
 ## Referencias Bibliográficas
 Apellido, N (fecha). *Titulo de la referencia* Recuperado el día X, de https://link \
 Open Computers Systems Fundamentals. (2020, 1 enero). *4.6. UDP Socket Programming: DNS* Recuperado 3 de junio de 2022, de https://w3.cs.jmu.edu/kirkpams/OpenCSF/Books/csf/html/UDPSockets.html
+* Using Libcurl in C/C++ Application . (2020). Retrieved 1 June 2022, from https://dev.to/hi_artem/using-libcurl-in-c-c-application-4668
