@@ -68,6 +68,10 @@ En la captura anterior podemos ver que www.google.com tiene 3 ips, por lo que co
 
 ![image](https://user-images.githubusercontent.com/15478613/171778125-7b54132d-2244-4943-abfd-417158f608e7.png)
 
+Tambien hicimos esta otra prueba con tres terminales al mismo tiempo para probrar la concurrencia del RR en elasticsearch:
+![image](https://user-images.githubusercontent.com/15478613/171974492-76ffd58c-d923-4f91-9967-b97c3944d287.png)
+
+
 Ahora si eliminamos ese documento y volvemos a hacer la petición, como ya no tenemos www.google.com en nuestra base de datos, la enviará a la api de Python mediante http, el cual devolvera el ip real de www.google.com como vemos a continuación:
 
 ![image](https://user-images.githubusercontent.com/15478613/171778536-0e100713-c4b2-443c-8bc3-b9149c73d413.png)
