@@ -148,4 +148,4 @@ Apellido, N (fecha). *Titulo de la referencia* Recuperado el día X, de https://
 Open Computers Systems Fundamentals. (2020, 1 enero). *4.6. UDP Socket Programming: DNS* Recuperado 3 de junio de 2022, de https://w3.cs.jmu.edu/kirkpams/OpenCSF/Books/csf/html/UDPSockets.html
 * Using Libcurl in C/C++ Application . (2020). Retrieved 1 June 2022, from https://dev.to/hi_artem/using-libcurl-in-c-c-application-4668
 * Creating RESTful Web APIs using Flask and Python. (2020). Retrieved 25 May 2022, from https://towardsdatascience.com/creating-restful-apis-using-flask-and-python-655bad51b24
-* 
+* Python File Open. (2022). Retrieved 23 May 2022, from https://www.w3schools.com/python/python_file_open.asp
